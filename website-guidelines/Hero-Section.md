@@ -103,9 +103,8 @@ Text transitions:
 
 ## OUTPUT
 Generate complete, production-ready code for:
-- `app/page.tsx`
-- `components/ResumeScroll.tsx`
-- `app/globals.css`
+- `app/page.jsx`
+- `components/ResumeScroll.jsx`
 
 Use nano banana only for UI primitives if needed, not for animation logic.
 
