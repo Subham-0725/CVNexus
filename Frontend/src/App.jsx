@@ -1,35 +1,25 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import './App.css';
+import LandingPage from './pages/LandingPage';
 
-function App() {
-  const [count, setCount] = useState(0);
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+
+      <main className="pt-20 bg-white">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">About CVNexus</h1></div>} />
+          <Route path="/services" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Our Services</h1></div>} />
+          <Route path="/services/create-resume" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Create Resume</h1></div>} />
+          <Route path="/services/ats-score" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">ATS Score Checker</h1></div>} />
+          <Route path="/services/feedback" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">AI Feedback</h1></div>} />
+          <Route path="/templates" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Resume Templates</h1></div>} />
+          <Route path="/contact" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Contact Us</h1></div>} />
+        </Routes>
+      </main>
+    </div>
   );
 }
-
-export default App;
