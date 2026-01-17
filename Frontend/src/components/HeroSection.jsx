@@ -1,154 +1,306 @@
-import { useEffect, useRef, useState } from 'react';
-import { useImageSequence } from '../hooks/useImageSequence';
+import { motion } from "framer-motion";
+import {
+  Search,
+  MapPin,
+  Briefcase,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
+import { useState } from "react";
 
-const HeroSection = () => {
-    const containerRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [progress, setProgress] = useState(0);
+// --- Configuration ---
+const POPULAR_TAGS = [
+  "Product Manager",
+  "Software Engineer",
+  "Data Scientist",
+  "Marketing Specialist",
+  "Sales Executive",
+];
 
-    // Configuration
-    const FRAME_COUNT = 200;
-    const START_INDEX = 1;
-    const SCROLL_HEIGHT = 2500; // How tall the scroll area is (determines animation speed/duration)
+// --- Sub-Components ---
 
-    const { drawFrame, isLoading } = useImageSequence({
-        frameCount: FRAME_COUNT,
-        pathTemplate: '/sequence/ezgif-frame-XXX.jpg',
-        startIndex: START_INDEX
-    });
+const SearchInput = ({
+  icon: Icon,
+  label,
+  placeholder,
+  value,
+  onChange,
+  onFocus,
+  onBlur,
+}) => (
+  <div className="flex items-center gap-4 w-full group cursor-text">
+    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-focus-within:bg-[#432DD7]/10 group-focus-within:text-[#432DD7] transition-colors shrink-0">
+      <Icon className="w-5 h-5" />
+    </div>
+    <div className="flex-1">
+      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 group-focus-within:text-[#432DD7] transition-colors">
+        {label}
+      </label>
+      <input
+        type="text"
+        placeholder={placeholder}
+        className="w-full text-sm text-slate-900 placeholder:text-slate-300 outline-none bg-transparent font-semibold"
+        value={value}
+        onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+      />
+    </div>
+  </div>
+);
 
-    // Handle Resize
-    useEffect(() => {
-        const handleResize = () => {
-            if (canvasRef.current) {
-                canvasRef.current.width = window.innerWidth;
-                canvasRef.current.height = window.innerHeight;
-                // Redraw current frame on resize
-                const ctx = canvasRef.current.getContext('2d');
-                drawFrame(progress * (FRAME_COUNT - 1), canvasRef.current, ctx);
-            }
-        };
+const TagButton = ({ tag }) => (
+  <motion.button
+    whileHover={{ scale: 1.05, backgroundColor: "#fff" }}
+    whileTap={{ scale: 0.95 }}
+    className="px-4 py-2 bg-slate-50/80 hover:shadow-md text-slate-600 text-xs font-semibold rounded-full transition-all border border-slate-100 hover:border-[#432DD7]/20 hover:text-[#432DD7]"
+  >
+    {tag}
+  </motion.button>
+);
 
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Initial size
+const FloatingBadge = ({
+  icon: Icon,
+  title,
+  subtitle,
+  className,
+  animationDelay = 0,
+  yOffset = -10,
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{
+      opacity: 1,
+      y: [0, yOffset, 0],
+    }}
+    transition={{
+      y: {
+        duration: 5,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay: animationDelay,
+      },
+      opacity: { duration: 0.5, delay: 0.5 },
+    }}
+    className={`absolute z-20 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] flex items-center gap-3 border border-white/50 max-w-[220px] ${className}`}
+  >
+    {Icon ? (
+      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#432DD7] to-[#5b46df] flex items-center justify-center text-white shadow-lg shadow-[#432DD7]/20">
+        <Icon size={20} />
+      </div>
+    ) : (
+      <div className="flex -space-x-3">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="w-10 h-10 rounded-full border-[3px] border-white bg-slate-200 shadow-sm"
+          />
+        ))}
+      </div>
+    )}
+    <div>
+      <p className="text-sm font-bold text-slate-900 leading-tight">{title}</p>
+      <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+    </div>
+  </motion.div>
+);
 
-        return () => window.removeEventListener('resize', handleResize);
-    }, [drawFrame, progress]);
+export default function HeroSection() {
+  const [isFocused, setIsFocused] = useState(false);
+  const [jobTitle, setJobTitle] = useState("");
+  const [location, setLocation] = useState("");
 
-    // Handle Scroll
-    useEffect(() => {
-        const handleScroll = () => {
-            if (!containerRef.current) return;
-
-            const container = containerRef.current;
-            const rect = container.getBoundingClientRect();
-
-            // Calculate start and end points
-            // We want the animation to start when the container hits the top (roughly)
-            // and end when we've scrolled through SCROLL_HEIGHT
-
-            // Using sticky positioning often means the container is taller than viewport.
-            // progress = (scrollTop - offsetTop) / (screenHeight - windowHeight)
-
-            // Actually simpler logic for sticky container:
-            // The container is `h-[300vh]` (or more). The sticky child is `h-screen`.
-            // Progress is how far down the parent we have scrolled.
-
-            // Top of container relative to viewport
-            const top = rect.top;
-            // Total scrollable distance = container height - viewport height
-            const totalDist = container.offsetHeight - window.innerHeight;
-
-            // Current scroll amount (inverted because top goes negative as we scroll down)
-            const scrolled = -top;
-
-            let norm = scrolled / totalDist;
-
-            // Clamp between 0 and 1
-            norm = Math.max(0, Math.min(1, norm));
-
-            setProgress(norm);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Initial check
-
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // Sync Canvas Draw
-    useEffect(() => {
-        if (!canvasRef.current) return;
-        const ctx = canvasRef.current.getContext('2d');
-
-        // Map 0..1 to 0..FRAME_COUNT-1
-        const frameIndex = progress * (FRAME_COUNT - 1);
-
-        requestAnimationFrame(() => {
-            drawFrame(frameIndex, canvasRef.current, ctx);
-        });
-    }, [progress, drawFrame]);
-
-    return (
-        // The outer container determines the scroll duration
-        // 300vh means the animation plays over 2 full viewport heights of scrolling
-        <div
-            ref={containerRef}
-            className="relative w-full"
-            style={{ height: `${SCROLL_HEIGHT}px` }}
+  return (
+    <section
+      // pt-16 (64px) = Exact height of Navbar.
+      // There is now 0px of "extra" whitespace.
+      className="relative w-full min-h-[90vh] bg-white overflow-hidden pt-6 pb-12 lg:pt-6 lg:pb-12"
+    >
+      {/* --- BACKGROUND DECORATION --- */}
+      <div className="absolute top-0 right-0 w-[55%] h-[100%] z-0 hidden lg:block pointer-events-none">
+        <svg
+          viewBox="0 0 600 800"
+          className="w-full h-full text-[#432DD7] fill-current opacity-[0.98]"
+          preserveAspectRatio="none"
         >
-            <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-white">
+          <path d="M50,0 C200,0 300,150 400,300 C550,500 450,700 700,900 V0 Z" />
+        </svg>
+      </div>
 
-                {/* Loading State */}
-                {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white z-20">
-                        <div className="w-8 h-8 border-4 border-gray-200 border-t-brand-primary rounded-full animate-spin"></div>
-                    </div>
-                )}
+      <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-                {/* The Animation Canvas */}
-                <canvas
-                    ref={canvasRef}
-                    className="block w-full h-full object-cover"
-                    style={{ width: '100%', height: '100%' }}
-                />
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* --- LEFT COLUMN: Content --- */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-2xl"
+          >
+            {/* Headline */}
+            <h1 className="text-5xl lg:text-[5rem] font-bold leading-[1.1] text-slate-900 mb-8 tracking-tight">
+              Your Resume Is Failing <br />
+              the ATS. <span className="text-[#432DD7]">Not You.</span>
+            </h1>
 
-                {/* Text Overlay - Fades out as we scroll */}
-                <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10 p-4 w-full max-w-4xl transition-opacity duration-300 ease-out"
-                    style={{
-                        opacity: Math.max(0, 1 - progress * 4), // Fades out quickly (start of scroll)
-                        transform: `translate(-50%, calc(-50% - ${progress * 100}px))`
-                    }}
-                >
-                    <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-gray-900 mb-6 antialiased">
-                        The Resume, <br />
-                        <span className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">Reimagined.</span>
-                    </h1>
-                    <p className="text-xl text-gray-600 max-w-lg mx-auto leading-relaxed">
-                        Experience how a chaotic history transforms into a structured, ATS-ready professional story.
-                    </p>
-                    <div className="mt-8 text-sm font-medium text-brand-primary uppercase tracking-widest">
-                        Scroll to See the Structure
-                    </div>
+            {/* Subtext */}
+            <p className="text-lg text-slate-500 font-medium mb-12 max-w-lg leading-relaxed">
+              <span className="text-slate-900 font-bold">
+                Over 75% of resumes
+              </span>{" "}
+              never reach a recruiter. We optimize yours to pass ATS screening —
+              instantly.
+            </p>
+
+            {/* --- SEARCH BAR --- */}
+            <div
+              className={`bg-white p-3 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 transition-all duration-300 ${
+                isFocused
+                  ? "ring-4 ring-[#432DD7]/10 shadow-[0_20px_50px_rgba(67,45,215,0.15)] scale-[1.01]"
+                  : "hover:shadow-lg"
+              }`}
+            >
+              <div className="flex flex-col md:flex-row md:items-center">
+                {/* Input 1 */}
+                <div className="flex-1 px-4 py-3 border-b md:border-b-0 md:border-r border-slate-100">
+                  <SearchInput
+                    icon={Briefcase}
+                    label="Target Role"
+                    placeholder="e.g. Frontend Developer"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                  />
                 </div>
 
-                {/* Final State Text (Optional - appears at end) */}
-                <div
-                    className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center pointer-events-none transition-opacity duration-500 delay-100"
-                    style={{
-                        opacity: progress > 0.9 ? 1 : 0,
-                        transform: `translateX(-50%)`
-                    }}
-                >
-                    <p className="text-2xl font-semibold text-brand-dark">
-                        Perfectly Structured. Every Time.
-                    </p>
+                {/* Input 2 */}
+                <div className="flex-1 px-4 py-3">
+                  <SearchInput
+                    icon={MapPin}
+                    label="Job Location"
+                    placeholder="e.g. Remote / New York"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                  />
                 </div>
 
+                {/* Button */}
+                <div className="p-1">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full md:w-auto h-14 px-10 rounded-2xl bg-[#432DD7] hover:bg-[#3521B5] text-white font-bold text-sm shadow-xl shadow-[#432DD7]/20 flex items-center justify-center gap-2 transition-all"
+                  >
+                    Check ATS Score
+                    <ArrowRight size={18} />
+                  </motion.button>
+                </div>
+              </div>
             </div>
-        </div>
-    );
-};
 
-export default HeroSection;
+            {/* --- TAGS --- */}
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">
+                Popular ATS Checks:
+              </span>
+              {POPULAR_TAGS.map((tag) => (
+                <TagButton key={tag} tag={tag} />
+              ))}
+            </div>
+
+            {/* --- SOCIAL PROOF --- */}
+            <div className="mt-16 pt-8 border-t border-slate-100/80">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+                Optimized for ATS used by
+              </p>
+              <div className="flex gap-10 opacity-40 grayscale hover:grayscale-0 transition-all duration-500 items-center">
+                <div
+                  className="h-5 w-24 bg-slate-900/80 mask-logo"
+                  style={{
+                    maskImage:
+                      "url(https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg)",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                  }}
+                />
+                <div
+                  className="h-5 w-20 bg-slate-900/80 mask-logo"
+                  style={{
+                    maskImage:
+                      "url(https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg)",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                  }}
+                />
+                <div
+                  className="h-6 w-24 bg-slate-900/80 mask-logo"
+                  style={{
+                    maskImage:
+                      "url(https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg)",
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                  }}
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* --- RIGHT COLUMN: Visuals --- */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+            className="relative hidden lg:flex items-center justify-center h-full pl-12"
+          >
+            <div className="relative w-[500px] h-[500px]">
+              <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full animate-pulse" />
+
+              <div
+                className="absolute inset-0 bg-white/20 backdrop-blur-md p-4 rounded-[80px] border border-white/40 shadow-2xl z-10"
+                style={{ transform: "rotate(45deg)" }}
+              >
+                <div className="w-full h-full bg-slate-100 rounded-[65px] overflow-hidden relative shadow-[inset_0_2px_20px_rgba(0,0,0,0.1)]">
+                  <div
+                    className="w-[145%] h-[145%] absolute top-1/2 left-1/2"
+                    style={{
+                      transform: "translate(-50%, -50%) rotate(-45deg)",
+                    }}
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop"
+                      alt="Happy Professional"
+                      className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#432DD7]/20 to-transparent mix-blend-overlay pointer-events-none" />
+                </div>
+              </div>
+
+              <FloatingBadge
+                icon={CheckCircle2}
+                title="Interview Ready"
+                subtitle="Score: 95/100"
+                className="-top-8 -right-8"
+                animationDelay={0}
+                yOffset={-12}
+              />
+
+              <FloatingBadge
+                title="10k+ Users"
+                subtitle="Hired this month"
+                className="bottom-12 -left-12"
+                animationDelay={1.5}
+                yOffset={12}
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
