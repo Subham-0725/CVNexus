@@ -215,9 +215,9 @@ export default function HeroSection() {
 
             {/* --- SOCIAL PROOF --- */}
             <div className="mt-16 pt-8 border-t border-slate-100/80">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
                 Optimized for ATS used by
-              </p>
+              </div>
               <div className="flex gap-10 opacity-40 grayscale hover:grayscale-0 transition-all duration-500 items-center">
                 <div
                   className="h-5 w-24 bg-slate-900/80 mask-logo"

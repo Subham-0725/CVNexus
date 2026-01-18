@@ -1,20 +1,23 @@
 import express from "express";
 import cors from "cors";
+import meRoute from "./routes/me.js";
 
 const app = express();
 
 /* ------------------------- Global Middleware ------------------------- */
 
-// JSON body parsing
 app.use(express.json({ limit: "2mb" }));
 
-// CORS (open for dev, restrict later)
 app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  })
+  }),
 );
+
+/* ---------------------------- Routes -------------------------------- */
+
+app.use("/api", meRoute);
 
 /* --------------------------- Health Check ---------------------------- */
 
@@ -35,7 +38,6 @@ app.use((req, res) => {
 });
 
 /* ---------------------- Global Error Handler -------------------------- */
-/* MUST be last */
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
