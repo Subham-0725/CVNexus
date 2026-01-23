@@ -1,11 +1,15 @@
 import { Routes, Route } from "react-router-dom";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
+import Dashboard from "./pages/Dashboard";
+import Templates from "./pages/Templates";
+
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
-import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   return (
@@ -14,10 +18,22 @@ export default function App() {
 
       <main className="pt-20 bg-white">
         <Routes>
-          {/* Public */}
-          <Route path="/" element={<LandingPage />} />
+          {/* Root route */}
+          <Route
+            path="/"
+            element={
+              <>
+                <SignedIn>
+                  <Dashboard />
+                </SignedIn>
+                <SignedOut>
+                  <LandingPage />
+                </SignedOut>
+              </>
+            }
+          />
 
-          {/* Public-only (logged OUT only) */}
+          {/* Public-only routes */}
           <Route
             path="/sign-in/*"
             element={
@@ -36,12 +52,21 @@ export default function App() {
             }
           />
 
-          {/* Protected (logged IN only) */}
+          {/* Protected routes */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/templates"
+            element={
+              <ProtectedRoute>
+                <Templates />
               </ProtectedRoute>
             }
           />
