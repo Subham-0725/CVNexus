@@ -52,4 +52,9 @@
             transform: translateY(-20px);
         }
     }
+
+    .mask-image-gradient {
+        mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    }
 }
