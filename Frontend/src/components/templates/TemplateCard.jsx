@@ -68,10 +68,10 @@ export default function TemplateCard({ template, onSelect }) {
 
           {/* GRADIENT OVERLAYS */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/[0.02] to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-black/[0.02] to-transparent" />
             <div
               className={`
-               absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-slate-900/80 to-transparent 
+               absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-slate-900/80 to-transparent 
                transition-opacity duration-500 ease-out
                ${
                  isNavigating
@@ -159,7 +159,7 @@ export default function TemplateCard({ template, onSelect }) {
         </div>
 
         {/* CONTENT FOOTER */}
-        <div className="p-5 flex flex-col flex-grow bg-white z-10">
+        <div className="p-5 flex flex-col grow bg-white z-10">
           <div className="flex justify-between items-start gap-3 mb-2">
             <h3
               className={`

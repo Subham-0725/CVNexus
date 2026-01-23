@@ -7,6 +7,7 @@ import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
+import Builder from "./pages/Builder";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
@@ -67,6 +68,16 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Templates />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Builder route */}
+          <Route
+            path="/builder/:id"
+            element={
+              <ProtectedRoute>
+                <Builder />
               </ProtectedRoute>
             }
           />
