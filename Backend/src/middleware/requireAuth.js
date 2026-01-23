@@ -10,11 +10,16 @@ export const requireAuth = async (req, res, next) => {
 
     const token = authHeader.replace("Bearer ", "");
 
+    // Verify token with Clerk
     const session = await clerkClient.verifyToken(token);
 
-    req.clerkUserId = session.sub;
+    req.auth = {
+      clerkUserId: session.sub,
+    };
+
     next();
-  } catch (error) {
+  } catch (err) {
+    console.error("Auth error:", err);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 };

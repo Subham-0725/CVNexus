@@ -71,8 +71,8 @@ const BentoCard = ({
       }}
       onMouseMove={handleMouseMove}
       className={`group relative text-left ${
-        large ? "min-h-[340px] md:col-span-2" : "min-h-[320px]"
-      } rounded-[32px] bg-[#09090b]
+        large ? "min-h-85 md:col-span-2" : "min-h-80"
+      } rounded-4xl bg-[#09090b]
         shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3)]
         cursor-pointer overflow-hidden flex flex-col justify-between
         transition-all duration-500
@@ -94,7 +94,7 @@ const BentoCard = ({
       />
 
       {/* Border */}
-      <div className="absolute inset-0 rounded-[32px] ring-1 ring-white/10 group-hover:ring-white/20 transition duration-500" />
+      <div className="absolute inset-0 rounded-4xl ring-1 ring-white/10 group-hover:ring-white/20 transition duration-500" />
 
       {/* Noise */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
@@ -175,9 +175,9 @@ export default function Dashboard() {
         const token = await getToken();
         if (!token) return;
 
-        await axios.get("http://localhost:5000/api/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       await axios.get("http://localhost:5000/api/v1/me", {
+         headers: { Authorization: `Bearer ${token}` },
+       });
       } catch (err) {
         console.error("User sync failed:", err);
       }
@@ -198,7 +198,7 @@ export default function Dashboard() {
       <div className="min-h-screen relative overflow-x-hidden bg-[#FDFDFD]">
         <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] pointer-events-none" />
 
-        <div className="max-w-[1200px] mx-auto pt-20 pb-24 px-6 md:px-10 space-y-16">
+        <div className="max-w-300 mx-auto pt-20 pb-24 px-6 md:px-10 space-y-16">
           <motion.header
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

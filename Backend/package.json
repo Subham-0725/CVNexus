@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/express": "^1.7.65",
     "axios": "^1.13.2",
     "bullmq": "^5.66.5",
     "cors": "^2.8.5",
