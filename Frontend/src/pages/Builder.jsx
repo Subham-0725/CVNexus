@@ -3,20 +3,27 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 
+import BuilderContainer from "../resumeBuilder/BuilderContainer";
+
 export default function Builder() {
-  const { id } = useParams(); // resumeId
+  const { resumeId } = useParams(); // ✅ ONLY this
   const { getToken } = useAuth();
 
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchResume = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
         const token = await getToken();
+        if (!token) throw new Error("No auth token");
 
         const res = await axios.get(
-          `http://localhost:5000/api/v1/resumes/${id}`,
+          `http://localhost:5000/api/v1/resumes/${resumeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -27,26 +34,36 @@ export default function Builder() {
         setResume(res.data);
       } catch (err) {
         console.error("Failed to load resume:", err);
+        setError("Failed to load resume");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchResume();
-  }, [id, getToken]);
+    if (resumeId) {
+      fetchResume();
+    }
+  }, [resumeId, getToken]); // ✅ correct dependency
+
+  /* -------------------- UI States -------------------- */
 
   if (loading) {
-    return <div className="p-6">Loading resume…</div>;
+    return (
+      <div className="h-screen flex items-center justify-center text-slate-600">
+        Loading resume…
+      </div>
+    );
   }
 
-  if (!resume) {
-    return <div className="p-6">Resume not found</div>;
+  if (error || !resume) {
+    return (
+      <div className="h-screen flex items-center justify-center text-red-600">
+        Resume not found
+      </div>
+    );
   }
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">{resume.title}</h1>
-      <p className="text-slate-500 mt-1">Template: {resume.templateSlug}</p>
-    </div>
-  );
+  /* -------------------- Builder -------------------- */
+
+  return <BuilderContainer resume={resume} />;
 }

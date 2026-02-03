@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
 
-import TemplateGrid from "../components/templates/TemplateGrid";
+import TemplateGrid from "../components/templateLibrary/TemplateGrid";
 import { templates } from "../data/templates";
 
 export default function Templates() {
   const navigate = useNavigate();
   const { isSignedIn, getToken } = useAuth();
 
-  const handleSelectTemplate = async (templateSlug) => {
-    console.log("CLICKED TEMPLATE:", templateSlug);
+  const handleSelectTemplate = async (templateId) => {
+    console.log("CLICKED TEMPLATE:", templateId);
 
     if (!isSignedIn) {
       console.error("User not signed in");
@@ -21,12 +21,11 @@ export default function Templates() {
 
     try {
       const token = await getToken();
-
-      console.log("CLERK TOKEN RECEIVED");
+      console.log("Token received:", !!token);
 
       const response = await axios.post(
         "http://localhost:5000/api/v1/resumes",
-        { templateSlug },
+        { templateSlug: templateId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,12 +33,11 @@ export default function Templates() {
         },
       );
 
-      console.log("RESUME CREATED:", response.data);
-
+      console.log("Resume created:", response.data);
       const resumeId = response.data._id;
       navigate(`/builder/${resumeId}`);
     } catch (error) {
-      console.error("Failed to create resume:", error);
+      console.error("Failed to create resume:", error.response?.data || error.message);
     }
   };
 

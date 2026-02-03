@@ -3,10 +3,13 @@ import Resume from "../models/Resume.js";
 import Template from "../models/Template.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { attachUser } from "../middleware/attachUser.js";
+import { updateResume } from "../controllers/resume.controller.js";
 
 const router = express.Router();
 
-// CREATE resume from template
+/* --------------------------------------------------------------------------
+ * CREATE resume from template
+ * -------------------------------------------------------------------------- */
 router.post("/", requireAuth, attachUser, async (req, res) => {
   const { templateSlug } = req.body;
 
@@ -27,13 +30,17 @@ router.post("/", requireAuth, attachUser, async (req, res) => {
   res.status(201).json(resume);
 });
 
-// GET user's resumes
+/* --------------------------------------------------------------------------
+ * GET all resumes of logged-in user
+ * -------------------------------------------------------------------------- */
 router.get("/", requireAuth, attachUser, async (req, res) => {
   const resumes = await Resume.find({ userId: req.user.id });
   res.json(resumes);
 });
 
-// GET single resume
+/* --------------------------------------------------------------------------
+ * GET single resume
+ * -------------------------------------------------------------------------- */
 router.get("/:id", requireAuth, attachUser, async (req, res) => {
   const resume = await Resume.findOne({
     _id: req.params.id,
@@ -46,5 +53,10 @@ router.get("/:id", requireAuth, attachUser, async (req, res) => {
 
   res.json(resume);
 });
+
+/* --------------------------------------------------------------------------
+ * PATCH update resume (AUTOSAVE)
+ * -------------------------------------------------------------------------- */
+router.patch("/:id", requireAuth, attachUser, updateResume);
 
 export default router;

@@ -5,14 +5,12 @@ import { ArrowRight, MousePointer2 } from "lucide-react";
 export default function TemplateCard({ template, onSelect }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isButtonHovered, setIsButtonHovered] = useState(false); // New State
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
-  const handleSelection = (e) => {
-    e.stopPropagation();
+  const handleSelection = () => {
+    if (isNavigating) return;
     setIsNavigating(true);
-    setTimeout(() => {
-      onSelect(template.id);
-    }, 500);
+    onSelect(template.id); // 🔥 navigate immediately
   };
 
   return (
@@ -25,7 +23,6 @@ export default function TemplateCard({ template, onSelect }) {
     >
       <button
         onClick={handleSelection}
-        disabled={isNavigating}
         className={`
           relative w-full h-full text-left flex flex-col
           bg-white rounded-2xl
@@ -41,7 +38,7 @@ export default function TemplateCard({ template, onSelect }) {
           }
         `}
       >
-        {/* --- IMAGE CONTAINER --- */}
+        {/* IMAGE */}
         <div className="relative w-full aspect-[1/1.414] bg-slate-50 overflow-hidden border-b border-slate-100">
           {!imageLoaded && (
             <div className="absolute inset-0 bg-slate-100 animate-pulse" />
@@ -49,9 +46,9 @@ export default function TemplateCard({ template, onSelect }) {
 
           <div
             className={`
-            relative w-full h-full transform transition-transform duration-700 ease-out
-            ${!isNavigating && "group-hover:scale-105"}
-          `}
+              relative w-full h-full transform transition-transform duration-700 ease-out
+              ${!isNavigating && "group-hover:scale-105"}
+            `}
           >
             <img
               src={template.preview}
@@ -66,54 +63,48 @@ export default function TemplateCard({ template, onSelect }) {
             />
           </div>
 
-          {/* GRADIENT OVERLAYS */}
+          {/* OVERLAY */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-black/[0.02] to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-black/2 to-transparent" />
             <div
               className={`
-               absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-slate-900/80 to-transparent 
-               transition-opacity duration-500 ease-out
-               ${
-                 isNavigating
-                   ? "opacity-100"
-                   : "opacity-0 group-hover:opacity-100"
-               }
-            `}
+                absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-slate-900/80 to-transparent
+                transition-opacity duration-500
+                ${isNavigating ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
+              `}
             />
           </div>
 
-          {/* FLOATING BUTTON */}
+          {/* CTA */}
           <div
             className={`
-            absolute bottom-6 left-0 right-0 flex justify-center 
-            transition-all duration-300 ease-out
-            ${
-              isNavigating
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 delay-75"
-            }
-          `}
+              absolute bottom-6 left-0 right-0 flex justify-center
+              transition-all duration-300
+              ${
+                isNavigating
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+              }
+            `}
           >
             <span
-              // Track hover on the BUTTON itself
               onMouseEnter={() => setIsButtonHovered(true)}
               onMouseLeave={() => setIsButtonHovered(false)}
               className={`
-              inline-flex items-center gap-2 px-6 py-3 
-              rounded-full font-bold text-sm tracking-wide shadow-xl shadow-black/20
-              transition-all duration-300
-              ${
-                isNavigating || isButtonHovered
-                  ? "bg-indigo-600 text-white scale-105"
-                  : "bg-white text-slate-900 group-hover:scale-100 scale-95"
-              }
-            `}
+                inline-flex items-center gap-2 px-6 py-3
+                rounded-full font-bold text-sm shadow-xl
+                transition-all duration-300
+                ${
+                  isNavigating || isButtonHovered
+                    ? "bg-indigo-600 text-white scale-105"
+                    : "bg-white text-slate-900 scale-95"
+                }
+              `}
             >
               <AnimatePresence mode="wait">
                 {isNavigating ? (
-                  // STATE: CLICKED
                   <motion.div
-                    key="clicking"
+                    key="opening"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2"
@@ -124,24 +115,7 @@ export default function TemplateCard({ template, onSelect }) {
                       className="fill-white stroke-white animate-bounce"
                     />
                   </motion.div>
-                ) : isButtonHovered ? (
-                  // STATE: HOVERING BUTTON (POINTER ICON)
-                  <motion.div
-                    key="hovering"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="flex items-center gap-2"
-                  >
-                    <span>Use Template</span>
-                    {/* The pointer replaces the arrow here */}
-                    <MousePointer2
-                      size={16}
-                      className="fill-white stroke-white"
-                    />
-                  </motion.div>
                 ) : (
-                  // STATE: DEFAULT (ARROW ICON)
                   <motion.div
                     key="idle"
                     initial={{ opacity: 0, y: -5 }}
@@ -158,24 +132,19 @@ export default function TemplateCard({ template, onSelect }) {
           </div>
         </div>
 
-        {/* CONTENT FOOTER */}
-        <div className="p-5 flex flex-col grow bg-white z-10">
-          <div className="flex justify-between items-start gap-3 mb-2">
-            <h3
-              className={`
-              text-lg font-bold transition-colors duration-300
-              ${
-                isNavigating
-                  ? "text-indigo-600"
-                  : "text-slate-900 group-hover:text-indigo-600"
-              }
-            `}
-            >
-              {template.name}
-            </h3>
-          </div>
+        {/* FOOTER */}
+        <div className="p-5 flex flex-col grow bg-white">
+          <h3
+            className={`text-lg font-bold transition-colors ${
+              isNavigating
+                ? "text-indigo-600"
+                : "text-slate-900 group-hover:text-indigo-600"
+            }`}
+          >
+            {template.name}
+          </h3>
 
-          <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
+          <p className="text-sm text-slate-500 mt-1 line-clamp-2">
             {template.description}
           </p>
         </div>

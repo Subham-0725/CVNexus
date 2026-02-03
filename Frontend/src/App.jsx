@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 import Navbar from "./components/Navbar";
@@ -12,14 +12,22 @@ import Builder from "./pages/Builder";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
 
+import FeaturesPage from "./pages/FeaturesPage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+
 export default function App() {
+  const location = useLocation();
+  const isBuilderRoute = location.pathname.startsWith("/builder");
+
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      {/* Hide navbar on Builder for focused editing UX */}
+      {!isBuilderRoute && <Navbar />}
 
-      <main className="pt-20 bg-white">
+      <main className={isBuilderRoute ? "" : "pt-20 bg-white"}>
         <Routes>
-          {/* Root route */}
+          {/* Root */}
           <Route
             path="/"
             element={
@@ -34,7 +42,12 @@ export default function App() {
             }
           />
 
-          {/* Public-only routes */}
+          {/* Public pages */}
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Auth (public-only) */}
           <Route
             path="/sign-in/*"
             element={
@@ -53,7 +66,7 @@ export default function App() {
             }
           />
 
-          {/* Protected routes */}
+          {/* Protected */}
           <Route
             path="/dashboard"
             element={
@@ -72,9 +85,8 @@ export default function App() {
             }
           />
 
-          {/* ✅ Builder route */}
           <Route
-            path="/builder/:id"
+            path="/builder/:resumeId"
             element={
               <ProtectedRoute>
                 <Builder />

@@ -14,7 +14,7 @@ async function seedTemplates() {
         name: "Clean ATS",
         description:
           "Minimal, one-column ATS-safe resume with a straightforward structure",
-        previewImageUrl: "/templates/Resume_1.png",
+        previewImageUrl: "/templateLibrary/Resume_1.png",
         isPremium: false,
         schemaDefinition: {
           sections: ["header", "experience", "education", "skills"],
@@ -26,7 +26,7 @@ async function seedTemplates() {
         name: "Modern ATS",
         description:
           "ATS-optimized layout with enhanced spacing and clearer section hierarchy",
-        previewImageUrl: "/templates/Resume_2.jpg",
+        previewImageUrl: "/templateLibrary/Resume_2.jpg",
         isPremium: false,
         schemaDefinition: {
           sections: ["header", "summary", "experience", "skills"],
@@ -38,7 +38,7 @@ async function seedTemplates() {
         name: "Professional Sidebar",
         description:
           "Two-column resume with a structured sidebar for skills, education, and contact details",
-        previewImageUrl: "/templates/Resume_3.png",
+        previewImageUrl: "/templateLibrary/Resume_3.png",
         isPremium: false,
         schemaDefinition: {
           sections: ["header", "skills", "experience", "education"],
@@ -50,7 +50,7 @@ async function seedTemplates() {
         name: "Classic Elegant",
         description:
           "Timeless two-column resume design with balanced typography and clean dividers",
-        previewImageUrl: "/templates/Resume_4.jpg",
+        previewImageUrl: "/templateLibrary/Resume_4.jpg",
         isPremium: false,
         schemaDefinition: {
           sections: ["header", "experience", "education", "skills"],
@@ -62,7 +62,7 @@ async function seedTemplates() {
         name: "Modern Creative",
         description:
           "Contemporary resume with bold section contrast and visual emphasis for modern roles",
-        previewImageUrl: "/templates/Resume_5.jpg",
+        previewImageUrl: "/templateLibrary/Resume_5.jpg",
         isPremium: true,
         schemaDefinition: {
           sections: ["header", "summary", "experience", "projects", "skills"],
@@ -74,7 +74,7 @@ async function seedTemplates() {
         name: "Bold Sidebar",
         description:
           "High-contrast sidebar layout ideal for marketing, design, and client-facing roles",
-        previewImageUrl: "/templates/Resume_6.jpg",
+        previewImageUrl: "/templateLibrary/Resume_6.jpg",
         isPremium: true,
         schemaDefinition: {
           sections: ["header", "skills", "experience", "education"],
@@ -86,7 +86,7 @@ async function seedTemplates() {
         name: "Executive Clean",
         description:
           "Refined resume format focused on leadership experience and executive-level clarity",
-        previewImageUrl: "/templates/Resume_7.jpg",
+        previewImageUrl: "/templateLibrary/Resume_7.jpg",
         isPremium: true,
         schemaDefinition: {
           sections: ["header", "summary", "experience", "education"],
@@ -98,7 +98,7 @@ async function seedTemplates() {
         name: "Soft Professional",
         description:
           "Clean and approachable resume design with subtle color accents and clear structure",
-        previewImageUrl: "/templates/Resume_8.jpg",
+        previewImageUrl: "/templateLibrary/Resume_8.jpg",
         isPremium: false,
         schemaDefinition: {
           sections: ["header", "experience", "education", "skills"],

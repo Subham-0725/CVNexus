@@ -1,11 +1,11 @@
-import Resume1 from "../assets/templates/Resume_1.png";
-import Resume2 from "../assets/templates/Resume_2.jpg";
-import Resume3 from "../assets/templates/Resume_3.png";
-import Resume4 from "../assets/templates/Resume_4.jpg";
-import Resume5 from "../assets/templates/Resume_5.jpg";
-import Resume6 from "../assets/templates/Resume_6.jpg";
-import Resume7 from "../assets/templates/Resume_7.jpg";
-import Resume8 from "../assets/templates/Resume_8.jpg";
+import Resume1 from "../assets/templateLibrary/Resume_1.png";
+import Resume2 from "../assets/templateLibrary/Resume_2.jpg";
+import Resume3 from "../assets/templateLibrary/Resume_3.png";
+import Resume4 from "../assets/templateLibrary/Resume_4.jpg";
+import Resume5 from "../assets/templateLibrary/Resume_5.jpg";
+import Resume6 from "../assets/templateLibrary/Resume_6.jpg";
+import Resume7 from "../assets/templateLibrary/Resume_7.jpg";
+import Resume8 from "../assets/templateLibrary/Resume_8.jpg";
 
 export const templates = [
   {
