@@ -1,4 +1,4 @@
-import Resume1 from "../assets/templateLibrary/Resume_1.png";
+import Resume1 from "../assets/templateLibrary/Resume_1.jpg";
 import Resume2 from "../assets/templateLibrary/Resume_2.jpg";
 import Resume3 from "../assets/templateLibrary/Resume_3.png";
 import Resume4 from "../assets/templateLibrary/Resume_4.jpg";

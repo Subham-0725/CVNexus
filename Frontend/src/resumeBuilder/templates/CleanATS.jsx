@@ -8,6 +8,7 @@ export default function CleanATS({ data }) {
     technicalSkills = [],
     softSkills = [],
     workExperience = [],
+    projects = [],
     education = [],
     achievements = [],
     certifications = [],
@@ -15,118 +16,166 @@ export default function CleanATS({ data }) {
     hobbies = [],
   } = data;
 
-  const allSkills = [...technicalSkills, ...softSkills];
-
-  // Professional Slate & Sage Palette
-  const colors = {
-    accent: "#6B8E6B", // Muted, sophisticated sage
-    primary: "#111827", // Near-black for better readability
-    secondary: "#6B7280", // Slate gray for metadata
-    border: "#000000",
-  };
-
   return (
-    <div className="p-16 font-sans text-[10pt] leading-[1.5] text-[#111827] bg-white max-w-[850px] mx-auto">
+    <div
+      className="w-full max-w-[210mm] mx-auto bg-white p-16 text-gray-900 text-[12pt] leading-normal selection:bg-gray-200"
+      style={{ fontFamily: '"Times New Roman", Times, serif' }}
+    >
       {/* ================= HEADER ================= */}
-      <header className="mb-10">
-        <h1 className="text-[34pt] font-black tracking-tighter uppercase leading-[0.85] text-black">
-          {personalInfo.fullName || "MIA WYATT"}
+      <header className="text-center mb-10">
+        <h1 className="text-[14pt] font-extrabold uppercase tracking-tight text-black mb-3">
+          {personalInfo.fullName || "Your Name"}
         </h1>
 
-        <div
-          className="text-[13pt] font-bold mt-3 pb-2 border-b-[2.5px] border-black tracking-tight"
-          style={{ color: colors.accent }}
-        >
-          {personalInfo.headline || "Professional Headline"}
-        </div>
+        {personalInfo.headline && (
+          <p className="text-[12pt] text-gray-700 font-medium mb-2">
+            {personalInfo.headline}
+          </p>
+        )}
 
-        {/* Minimalist Contact Info */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-[8.5pt] font-bold text-gray-500 mt-4 uppercase tracking-[0.05em]">
-          {personalInfo.email && (
-            <span className="flex items-center gap-1.5">
-              <span style={{ color: colors.accent }}>[at]</span>{" "}
-              {personalInfo.email}
-            </span>
-          )}
-          {personalInfo.phone && (
-            <span className="flex items-center gap-1.5">
-              <span style={{ color: colors.accent }}>[p]</span>{" "}
-              {personalInfo.phone}
-            </span>
-          )}
-          {personalInfo.linkedin && (
-            <span className="flex items-center gap-1.5">
-              <span style={{ color: colors.accent }}>[in]</span> LinkedIn
-            </span>
-          )}
+        <div className="flex flex-wrap justify-center items-center gap-x-2 text-[12pt] text-gray-800 font-medium">
           {personalInfo.location && (
-            <span className="flex items-center gap-1.5">
-              <span style={{ color: colors.accent }}>[l]</span>{" "}
-              {personalInfo.location}
+            <span>{personalInfo.location}</span>
+          )}
+
+          {!personalInfo.location && (
+            <span>
+              {[
+                personalInfo.address,
+                personalInfo.city,
+                personalInfo.state,
+                personalInfo.zip,
+              ]
+                .filter(Boolean)
+                .join(", ")}
             </span>
+          )}
+
+          {personalInfo.phone && (
+            <>
+              <span className="text-gray-400">|</span>
+              <span>{personalInfo.phone}</span>
+            </>
+          )}
+
+          {personalInfo.email && (
+            <>
+              <span className="text-gray-400">|</span>
+              <a
+                href={`mailto:${personalInfo.email}`}
+                className="hover:underline"
+              >
+                {personalInfo.email}
+              </a>
+            </>
+          )}
+
+          {personalInfo.linkedin && (
+            <>
+              <span className="text-gray-400">|</span>
+              <a
+                href={personalInfo.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
+              >
+                {personalInfo.linkedin.replace(/^https?:\/\/(www\.)?/, "")}
+              </a>
+            </>
+          )}
+
+          {personalInfo.website && (
+            <>
+              <span className="text-gray-400">|</span>
+              <a
+                href={personalInfo.website}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
+              >
+                {personalInfo.website.replace(/^https?:\/\//, "")}
+              </a>
+            </>
           )}
         </div>
       </header>
 
       {/* ================= SUMMARY ================= */}
       {summary && (
-        <Section title="Summary">
-          <p className="text-[#374151] leading-relaxed text-[10.5pt] max-w-[95%]">
+        <Section title="Professional Summary">
+          <p className="text-[12pt] leading-relaxed text-justify text-gray-800">
             {summary}
           </p>
         </Section>
       )}
 
-      {/* ================= SKILLS ================= */}
-      {allSkills.length > 0 && (
-        <Section title="Skills">
-          <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
-            {allSkills.map((skill, i) => (
-              <span
-                key={i}
-                className="border-b-[1.5px] border-gray-200 px-1 py-0.5 text-[9pt] font-bold text-gray-600 uppercase tracking-wider"
-              >
-                {skill}
-              </span>
+      {/* ================= EDUCATION ================= */}
+      {education.length > 0 && (
+        <Section title="Education">
+          <div className="flex flex-col gap-4">
+            {education.map((edu, idx) => (
+              <div key={idx} className="relative">
+                {/* Top Row: University & Date */}
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-[12pt] font-semibold text-gray-900">
+                    {edu.institution}
+                    {edu.location ? `, ${edu.location}` : ""}
+                  </span>
+                  <span className="text-[12pt] font-medium text-gray-800 tabular-nums">
+                    {edu.endDate || edu.year}
+                  </span>
+                </div>
+
+                {/* Degree */}
+                <div className="text-[12pt] font-bold text-black mb-1">
+                  {edu.degree}
+                </div>
+
+                {/* Description / Coursework */}
+                {edu.description && (
+                  <div className="text-[12pt] text-gray-700 leading-snug">
+                    {edu.description}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </Section>
       )}
 
-      {/* ================= EXPERIENCE ================= */}
+      {/* ================= RELEVANT EXPERIENCE ================= */}
       {workExperience.length > 0 && (
-        <Section title="Experience">
-          <div className="space-y-8">
+        <Section title="Relevant Experience">
+          <div className="flex flex-col gap-6">
             {workExperience.map((job, idx) => (
-              <div key={job.id || idx}>
-                <h3 className="text-[12pt] font-black text-black tracking-tight">
-                  {job.role}
-                </h3>
-
-                <div
-                  className="font-bold text-[10.5pt] mt-0.5"
-                  style={{ color: colors.accent }}
-                >
-                  {job.company}
-                </div>
-
-                <div className="flex gap-4 text-[8.5pt] font-bold text-gray-400 uppercase tracking-widest mt-1 mb-3">
-                  <span>
+              <div key={idx}>
+                {/* Top Row: Company & Date */}
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-[12pt] text-gray-900">
+                    {job.company}
+                    {job.location ? `, ${job.location}` : ""}
+                  </span>
+                  <span className="text-[12pt] font-medium text-gray-800 tabular-nums whitespace-nowrap">
                     {job.startDate} – {job.endDate || "Present"}
                   </span>
-                  {job.location && <span>• {job.location}</span>}
                 </div>
 
+                {/* Role */}
+                <div className="text-[12pt] font-bold text-black mb-2">
+                  {job.role}
+                </div>
+
+                {/* Bullets */}
                 {job.description && (
-                  <ul className="list-none space-y-2 text-[#374151] text-[10pt]">
-                    {job.description.split("\n").map((line, i) => (
-                      <li
-                        key={i}
-                        className="relative pl-5 before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-gray-300"
-                      >
-                        {line}
-                      </li>
-                    ))}
+                  <ul className="list-disc ml-5 space-y-1.5 text-[12pt] text-gray-800 marker:text-black">
+                    {job.description
+                      .split("\n")
+                      .filter(Boolean)
+                      .map((line, i) => (
+                        <li key={i} className="pl-1 leading-snug">
+                          {line}
+                        </li>
+                      ))}
                   </ul>
                 )}
               </div>
@@ -135,120 +184,127 @@ export default function CleanATS({ data }) {
         </Section>
       )}
 
-      {/* ================= EDUCATION ================= */}
-      {education.length > 0 && (
-        <Section title="Education">
-          {education.map((edu, idx) => (
-            <div key={edu.id || idx} className="mb-4">
-              <div className="text-[11.5pt] font-extrabold text-black uppercase tracking-tight">
-                {edu.degree}
+      {/* ================= PROJECTS ================= */}
+      {projects.length > 0 && (
+        <Section title="Projects">
+          <div className="flex flex-col gap-5">
+            {projects.map((project, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-[12pt] font-bold text-black">
+                    {project.title || "Project Name"}
+                  </span>
+                  {project.date && (
+                    <span className="text-[12pt] text-gray-800 tabular-nums">
+                      {project.date}
+                    </span>
+                  )}
+                </div>
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[12pt] text-blue-600 hover:underline block mb-1"
+                  >
+                    {project.link}
+                  </a>
+                )}
+                {project.description && (
+                  <p className="text-[12pt] text-gray-800 leading-snug mt-1">
+                    {project.description}
+                  </p>
+                )}
+                {project.technologies && (
+                  <p className="text-[12pt] text-gray-700 mt-1">
+                    <span className="font-semibold">Technologies:</span> {project.technologies}
+                  </p>
+                )}
               </div>
-              <div
-                className="font-bold text-[10pt]"
-                style={{ color: colors.accent }}
-              >
-                {edu.institution}
-              </div>
-              <div className="text-[8.5pt] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
-                {edu.startDate || edu.year} – {edu.endDate || ""}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </Section>
       )}
 
-      {/* ================= TWO-COLUMN GRID ================= */}
-      <div className="grid grid-cols-2 gap-x-16 mt-4">
-        {achievements.length > 0 && (
-          <Section title="Key Achievements">
-            <div className="space-y-6">
-              {achievements.map((a, i) => (
-                <div
-                  key={i}
-                  className="border-t border-gray-100 pt-3 first:border-0 first:pt-0"
-                >
-                  <div className="font-bold text-[10pt] flex items-start gap-3">
-                    <span style={{ color: colors.accent }}>//</span>
-                    <span className="leading-tight uppercase tracking-tight">
-                      {a.title || a}
-                    </span>
-                  </div>
-                  {a.description && (
-                    <p className="text-[9pt] text-gray-500 ml-6 mt-1.5 leading-normal">
-                      {a.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+      {/* ================= TECHNICAL SKILLS ================= */}
+      {technicalSkills.length > 0 && (
+        <Section title="Technical Skills">
+          <p className="text-[12pt] text-gray-800 leading-relaxed">
+            {technicalSkills.join(", ")}
+          </p>
+        </Section>
+      )}
 
-        {certifications.length > 0 && (
-          <Section title="Training">
-            <div className="space-y-6">
-              {certifications.map((c, i) => (
-                <div key={i}>
-                  <div
-                    className="font-bold text-[10pt] uppercase tracking-tight"
-                    style={{ color: colors.accent }}
-                  >
-                    {c.title || c}
-                  </div>
-                  {c.description && (
-                    <p className="text-[9pt] text-gray-500 mt-1.5 italic">
-                      {c.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
-      </div>
+      {/* ================= SOFT SKILLS ================= */}
+      {softSkills.length > 0 && (
+        <Section title="Soft Skills">
+          <p className="text-[12pt] text-gray-800 leading-relaxed">
+            {softSkills.join(", ")}
+          </p>
+        </Section>
+      )}
 
-      {/* ================= BOTTOM ROW (Languages & Interests) ================= */}
-      <div className="grid grid-cols-2 gap-x-16">
-        {languages.length > 0 && (
-          <Section title="Languages">
-            <div className="grid grid-cols-2 gap-4 border-t-2 border-black pt-3">
-              {languages.map((lang, i) => (
-                <div
-                  key={i}
-                  className="font-bold text-[9pt] uppercase tracking-widest"
-                >
-                  {lang}
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+      {/* ================= ACHIEVEMENTS ================= */}
+      {achievements.length > 0 && (
+        <Section title="Achievements">
+          <ul className="list-disc ml-5 space-y-2 text-[12pt] text-gray-800 marker:text-black">
+            {achievements.map((item, idx) => (
+              <li key={idx} className="pl-1 leading-snug">
+                {typeof item === "string" ? item : (
+                  <>
+                    {item.title && <span className="font-bold">{item.title}</span>}
+                    {item.title && item.description && <span> - </span>}
+                    {item.description}
+                    {item.date && <span className="text-gray-700"> ({item.date})</span>}
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
-        {hobbies.length > 0 && (
-          <Section title="Interests">
-            <div className="space-y-4 border-t-2 border-black pt-3">
-              {hobbies.slice(0, 2).map((h, i) => (
-                <div key={i}>
-                  <div className="font-bold text-[9pt] uppercase tracking-widest">
-                    {h.title || h}
-                  </div>
-                  <p className="text-[8.5pt] text-gray-500 leading-tight">
-                    {h.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
-      </div>
+      {/* ================= CERTIFICATIONS ================= */}
+      {certifications.length > 0 && (
+        <Section title="Certifications">
+          <ul className="list-disc ml-5 space-y-2 text-[12pt] text-gray-800 marker:text-black">
+            {certifications.map((cert, idx) => (
+              <li key={idx} className="pl-1 leading-snug">
+                {cert.title || cert}
+                {cert.issuer && <span> - {cert.issuer}</span>}
+                {cert.date && <span className="text-gray-700"> ({cert.date})</span>}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {/* ================= LANGUAGES ================= */}
+      {languages.length > 0 && (
+        <Section title="Languages">
+          <p className="text-[12pt] text-gray-800 leading-relaxed">
+            {languages.join(", ")}
+          </p>
+        </Section>
+      )}
+
+      {/* ================= INTERESTS ================= */}
+      {hobbies.length > 0 && (
+        <Section title="Interests">
+          <p className="text-[12pt] text-gray-800 leading-relaxed">
+            {hobbies.map((h) => h.title || h).join(", ")}
+          </p>
+        </Section>
+      )}
     </div>
   );
 }
 
+// Reusable Section Component
 function Section({ title, children }) {
   return (
-    <section className="mb-12 last:mb-0">
-      <h2 className="uppercase font-black text-[14pt] border-b-[2.5px] border-black mb-5 tracking-tight pb-1">
+    <section className="mb-8">
+      <h2 className="text-[14pt] font-extrabold uppercase tracking-widest border-b-2 border-black pb-2 mb-4 text-black">
         {title}
       </h2>
       <div>{children}</div>
