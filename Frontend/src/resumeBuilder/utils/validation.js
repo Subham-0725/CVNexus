@@ -1,5 +1,3 @@
-// src/resumeBuilder/utils/validation.js
-
 export const validateEmail = (email) => {
   if (!email) return { valid: true, error: "" };
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

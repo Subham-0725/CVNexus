@@ -11,6 +11,13 @@ if (!clerkPubKey) {
   throw new Error("Missing Clerk Publishable Key");
 }
 
+// Suppress browser extension errors
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason?.message?.includes('message channel closed')) {
+    event.preventDefault();
+  }
+});
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>

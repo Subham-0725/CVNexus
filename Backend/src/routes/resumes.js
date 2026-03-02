@@ -4,6 +4,7 @@ import Template from "../models/Template.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { attachUser } from "../middleware/attachUser.js";
 import { updateResume } from "../controllers/resume.controller.js";
+import { exportResume } from "../controllers/export.controller.js"; // ✅ NEW
 
 const router = express.Router();
 
@@ -58,5 +59,12 @@ router.get("/:id", requireAuth, attachUser, async (req, res) => {
  * PATCH update resume (AUTOSAVE)
  * -------------------------------------------------------------------------- */
 router.patch("/:id", requireAuth, attachUser, updateResume);
+
+/* --------------------------------------------------------------------------
+ * EXPORT resume (PDF / DOCX)
+ * GET /api/v1/resumes/:id/export?format=pdf
+ * GET /api/v1/resumes/:id/export?format=docx
+ * -------------------------------------------------------------------------- */
+router.get("/:id/export", requireAuth, attachUser, exportResume);
 
 export default router;

@@ -3,10 +3,14 @@ import ResumePreview from "./preview/ResumePreview";
 
 import useResumeData from "./hooks/useResumeData";
 import useTemplate from "./hooks/useTemplate";
+import useAutosaveResume from "./hooks/useAutosaveResume";
 
 export default function BuilderContainer({ resume }) {
   const { resumeData, setResumeData } = useResumeData(resume);
   const { templateSlug } = useTemplate(resume);
+
+  // Autosave everything the user types into MongoDB
+  useAutosaveResume(resume._id, resumeData);
 
   // Safety: resume fetched but data not initialized yet
   if (!resumeData) {
@@ -28,6 +32,8 @@ export default function BuilderContainer({ resume }) {
       <div className="overflow-y-auto bg-slate-100">
         <ResumePreview
           resume={{
+            _id: resume._id,
+            title: resume.title,
             templateSlug,
             data: resumeData,
           }}

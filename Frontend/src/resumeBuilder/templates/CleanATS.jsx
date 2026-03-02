@@ -1,5 +1,5 @@
-// src/resumeBuilder/templates/CleanATS.jsx
 import React from "react";
+import A4PaginatedDocument from "../preview/A4PaginatedDocument";
 
 export default function CleanATS({ data }) {
   const {
@@ -16,298 +16,218 @@ export default function CleanATS({ data }) {
     hobbies = [],
   } = data;
 
-  return (
-    <div
-      className="w-full max-w-[210mm] mx-auto bg-white p-16 text-gray-900 text-[12pt] leading-normal selection:bg-gray-200"
-      style={{ fontFamily: '"Times New Roman", Times, serif' }}
-    >
-      {/* ================= HEADER ================= */}
-      <header className="text-center mb-10">
-        <h1 className="text-[14pt] font-extrabold uppercase tracking-tight text-black mb-3">
+  const sections = [];
+
+  /* ================= HEADER ================= */
+  sections.push(
+    <div key="header" className="mb-10 break-words">
+      <header className="text-center">
+        <h1 className="text-[14pt] font-extrabold uppercase mb-2">
           {personalInfo.fullName || "Your Name"}
         </h1>
 
         {personalInfo.headline && (
-          <p className="text-[12pt] text-gray-700 font-medium mb-2">
-            {personalInfo.headline}
-          </p>
+          <p className="text-[12pt] mb-2">{personalInfo.headline}</p>
         )}
 
-        <div className="flex flex-wrap justify-center items-center gap-x-2 text-[12pt] text-gray-800 font-medium">
-          {personalInfo.location && (
-            <span>{personalInfo.location}</span>
-          )}
-
-          {!personalInfo.location && (
-            <span>
-              {[
-                personalInfo.address,
-                personalInfo.city,
-                personalInfo.state,
-                personalInfo.zip,
-              ]
-                .filter(Boolean)
-                .join(", ")}
-            </span>
-          )}
-
-          {personalInfo.phone && (
-            <>
-              <span className="text-gray-400">|</span>
-              <span>{personalInfo.phone}</span>
-            </>
-          )}
-
-          {personalInfo.email && (
-            <>
-              <span className="text-gray-400">|</span>
-              <a
-                href={`mailto:${personalInfo.email}`}
-                className="hover:underline"
-              >
-                {personalInfo.email}
-              </a>
-            </>
-          )}
-
-          {personalInfo.linkedin && (
-            <>
-              <span className="text-gray-400">|</span>
-              <a
-                href={personalInfo.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:underline"
-              >
-                {personalInfo.linkedin.replace(/^https?:\/\/(www\.)?/, "")}
-              </a>
-            </>
-          )}
-
-          {personalInfo.website && (
-            <>
-              <span className="text-gray-400">|</span>
-              <a
-                href={personalInfo.website}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:underline"
-              >
-                {personalInfo.website.replace(/^https?:\/\//, "")}
-              </a>
-            </>
-          )}
+        <div className="text-[12pt] flex flex-wrap justify-center gap-x-2 break-all">
+          {personalInfo.location && <span>{personalInfo.location}</span>}
+          {personalInfo.phone && <span>| {personalInfo.phone}</span>}
+          {personalInfo.email && <span>| {personalInfo.email}</span>}
+          {personalInfo.linkedin && <span>| {personalInfo.linkedin}</span>}
+          {personalInfo.website && <span>| {personalInfo.website}</span>}
         </div>
       </header>
+    </div>,
+  );
 
-      {/* ================= SUMMARY ================= */}
-      {summary && (
-        <Section title="Professional Summary">
-          <p className="text-[12pt] leading-relaxed text-justify text-gray-800">
-            {summary}
-          </p>
-        </Section>
-      )}
+  /* ================= SUMMARY ================= */
+  if (summary) {
+    sections.push(
+      <Section key="summary" title="Professional Summary">
+        <p className="text-[12pt] break-words text-justify">{summary}</p>
+      </Section>,
+    );
+  }
 
-      {/* ================= EDUCATION ================= */}
-      {education.length > 0 && (
-        <Section title="Education">
-          <div className="flex flex-col gap-4">
-            {education.map((edu, idx) => (
-              <div key={idx} className="relative">
-                {/* Top Row: University & Date */}
-                <div className="flex justify-between items-end mb-1">
-                  <span className="text-[12pt] font-semibold text-gray-900">
-                    {edu.institution}
-                    {edu.location ? `, ${edu.location}` : ""}
-                  </span>
-                  <span className="text-[12pt] font-medium text-gray-800 tabular-nums">
-                    {edu.endDate || edu.year}
-                  </span>
-                </div>
+  /* ================= EDUCATION ================= */
+  if (education.length > 0) {
+    sections.push(
+      <Section key="education" title="Education">
+        {education.map((edu, i) => (
+          <div key={i} className="mb-4 break-words">
+            <div className="flex justify-between">
+              <span className="font-semibold">
+                {edu.institution}
+                {edu.location ? `, ${edu.location}` : ""}
+              </span>
+              <span>{edu.endDate || edu.year}</span>
+            </div>
 
-                {/* Degree */}
-                <div className="text-[12pt] font-bold text-black mb-1">
-                  {edu.degree}
-                </div>
+            <div className="font-bold">{edu.degree}</div>
 
-                {/* Description / Coursework */}
-                {edu.description && (
-                  <div className="text-[12pt] text-gray-700 leading-snug">
-                    {edu.description}
-                  </div>
-                )}
-              </div>
-            ))}
+            {edu.description && <div>{edu.description}</div>}
           </div>
-        </Section>
-      )}
+        ))}
+      </Section>,
+    );
+  }
 
-      {/* ================= RELEVANT EXPERIENCE ================= */}
-      {workExperience.length > 0 && (
-        <Section title="Relevant Experience">
-          <div className="flex flex-col gap-6">
-            {workExperience.map((job, idx) => (
-              <div key={idx}>
-                {/* Top Row: Company & Date */}
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-[12pt] text-gray-900">
-                    {job.company}
-                    {job.location ? `, ${job.location}` : ""}
-                  </span>
-                  <span className="text-[12pt] font-medium text-gray-800 tabular-nums whitespace-nowrap">
-                    {job.startDate} – {job.endDate || "Present"}
-                  </span>
-                </div>
+  /* ================= EXPERIENCE ================= */
+  if (workExperience.length > 0) {
+    sections.push(
+      <Section key="experience" title="Relevant Experience">
+        {workExperience.map((job, i) => (
+          <div key={i} className="mb-6 break-words">
+            <div className="flex justify-between">
+              <span>
+                {job.company}
+                {job.location ? `, ${job.location}` : ""}
+              </span>
+              <span>
+                {job.startDate} – {job.endDate || "Present"}
+              </span>
+            </div>
 
-                {/* Role */}
-                <div className="text-[12pt] font-bold text-black mb-2">
-                  {job.role}
-                </div>
+            <div className="font-bold mb-2">{job.role}</div>
 
-                {/* Bullets */}
-                {job.description && (
-                  <ul className="list-disc ml-5 space-y-1.5 text-[12pt] text-gray-800 marker:text-black">
-                    {job.description
-                      .split("\n")
-                      .filter(Boolean)
-                      .map((line, i) => (
-                        <li key={i} className="pl-1 leading-snug">
-                          {line}
-                        </li>
-                      ))}
-                  </ul>
-                )}
-              </div>
-            ))}
+            {job.description && (
+              <ul className="list-disc ml-5 space-y-1">
+                {job.description
+                  .split("\n")
+                  .filter(Boolean)
+                  .map((line, idx) => (
+                    <li key={idx} className="break-words">
+                      {line}
+                    </li>
+                  ))}
+              </ul>
+            )}
           </div>
-        </Section>
-      )}
+        ))}
+      </Section>,
+    );
+  }
 
-      {/* ================= PROJECTS ================= */}
-      {projects.length > 0 && (
-        <Section title="Projects">
-          <div className="flex flex-col gap-5">
-            {projects.map((project, idx) => (
-              <div key={idx}>
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-[12pt] font-bold text-black">
-                    {project.title || "Project Name"}
-                  </span>
-                  {project.date && (
-                    <span className="text-[12pt] text-gray-800 tabular-nums">
-                      {project.date}
-                    </span>
-                  )}
-                </div>
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[12pt] text-blue-600 hover:underline block mb-1"
-                  >
-                    {project.link}
-                  </a>
-                )}
-                {project.description && (
-                  <p className="text-[12pt] text-gray-800 leading-snug mt-1">
-                    {project.description}
-                  </p>
-                )}
-                {project.technologies && (
-                  <p className="text-[12pt] text-gray-700 mt-1">
-                    <span className="font-semibold">Technologies:</span> {project.technologies}
-                  </p>
-                )}
-              </div>
-            ))}
+  /* ================= PROJECTS ================= */
+  if (projects.length > 0) {
+    sections.push(
+      <Section key="projects" title="Projects">
+        {projects.map((project, i) => (
+          <div key={i} className="mb-4 break-words">
+            <div className="flex justify-between">
+              <span className="font-bold">
+                {project.title || "Project Name"}
+              </span>
+              {project.date && <span>{project.date}</span>}
+            </div>
+
+            {project.link && (
+              <div className="break-all text-[12pt]">{project.link}</div>
+            )}
+
+            {project.description && <p>{project.description}</p>}
+
+            {project.technologies && (
+              <p>
+                <strong>Technologies:</strong> {project.technologies}
+              </p>
+            )}
           </div>
-        </Section>
-      )}
+        ))}
+      </Section>,
+    );
+  }
 
-      {/* ================= TECHNICAL SKILLS ================= */}
-      {technicalSkills.length > 0 && (
-        <Section title="Technical Skills">
-          <p className="text-[12pt] text-gray-800 leading-relaxed">
-            {technicalSkills.join(", ")}
-          </p>
-        </Section>
-      )}
+  /* ================= TECHNICAL SKILLS ================= */
+  if (technicalSkills.length > 0) {
+    sections.push(
+      <Section key="technicalSkills" title="Technical Skills">
+        <p className="break-words">{technicalSkills.join(", ")}</p>
+      </Section>,
+    );
+  }
 
-      {/* ================= SOFT SKILLS ================= */}
-      {softSkills.length > 0 && (
-        <Section title="Soft Skills">
-          <p className="text-[12pt] text-gray-800 leading-relaxed">
-            {softSkills.join(", ")}
-          </p>
-        </Section>
-      )}
+  /* ================= SOFT SKILLS ================= */
+  if (softSkills.length > 0) {
+    sections.push(
+      <Section key="softSkills" title="Soft Skills">
+        <p className="break-words">{softSkills.join(", ")}</p>
+      </Section>,
+    );
+  }
 
-      {/* ================= ACHIEVEMENTS ================= */}
-      {achievements.length > 0 && (
-        <Section title="Achievements">
-          <ul className="list-disc ml-5 space-y-2 text-[12pt] text-gray-800 marker:text-black">
-            {achievements.map((item, idx) => (
-              <li key={idx} className="pl-1 leading-snug">
-                {typeof item === "string" ? item : (
-                  <>
-                    {item.title && <span className="font-bold">{item.title}</span>}
-                    {item.title && item.description && <span> - </span>}
-                    {item.description}
-                    {item.date && <span className="text-gray-700"> ({item.date})</span>}
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
+  /* ================= ACHIEVEMENTS ================= */
+  if (achievements.length > 0) {
+    sections.push(
+      <Section key="achievements" title="Achievements">
+        <ul className="list-disc ml-5 space-y-1">
+          {achievements.map((item, i) => (
+            <li key={i} className="break-words">
+              {typeof item === "string"
+                ? item
+                : `${item.title || ""} ${item.description || ""}`}
+            </li>
+          ))}
+        </ul>
+      </Section>,
+    );
+  }
 
-      {/* ================= CERTIFICATIONS ================= */}
-      {certifications.length > 0 && (
-        <Section title="Certifications">
-          <ul className="list-disc ml-5 space-y-2 text-[12pt] text-gray-800 marker:text-black">
-            {certifications.map((cert, idx) => (
-              <li key={idx} className="pl-1 leading-snug">
-                {cert.title || cert}
-                {cert.issuer && <span> - {cert.issuer}</span>}
-                {cert.date && <span className="text-gray-700"> ({cert.date})</span>}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
+  /* ================= CERTIFICATIONS ================= */
+  if (certifications.length > 0) {
+    sections.push(
+      <Section key="certifications" title="Certifications">
+        <ul className="list-disc ml-5 space-y-1">
+          {certifications.map((cert, i) => (
+            <li key={i} className="break-words">
+              {cert.title || cert}
+              {cert.issuer && ` - ${cert.issuer}`}
+              {cert.date && ` (${cert.date})`}
+            </li>
+          ))}
+        </ul>
+      </Section>,
+    );
+  }
 
-      {/* ================= LANGUAGES ================= */}
-      {languages.length > 0 && (
-        <Section title="Languages">
-          <p className="text-[12pt] text-gray-800 leading-relaxed">
-            {languages.join(", ")}
-          </p>
-        </Section>
-      )}
+  /* ================= LANGUAGES ================= */
+  if (languages.length > 0) {
+    sections.push(
+      <Section key="languages" title="Languages">
+        <p className="break-words">{languages.join(", ")}</p>
+      </Section>,
+    );
+  }
 
-      {/* ================= INTERESTS ================= */}
-      {hobbies.length > 0 && (
-        <Section title="Interests">
-          <p className="text-[12pt] text-gray-800 leading-relaxed">
-            {hobbies.map((h) => h.title || h).join(", ")}
-          </p>
-        </Section>
-      )}
+  /* ================= INTERESTS ================= */
+  if (hobbies.length > 0) {
+    sections.push(
+      <Section key="hobbies" title="Interests">
+        <p className="break-words">
+          {hobbies.map((h) => h.title || h).join(", ")}
+        </p>
+      </Section>,
+    );
+  }
+
+  return (
+    <div
+      className="resume-document"
+      style={{ fontFamily: '"Times New Roman", Times, serif' }}
+    >
+      <A4PaginatedDocument>{sections}</A4PaginatedDocument>
     </div>
   );
 }
 
-// Reusable Section Component
 function Section({ title, children }) {
   return (
-    <section className="mb-8">
-      <h2 className="text-[14pt] font-extrabold uppercase tracking-widest border-b-2 border-black pb-2 mb-4 text-black">
+    <section className="mb-8 break-words">
+      <h2 className="text-[14pt] font-bold border-b-2 border-black pb-2 mb-4">
         {title}
       </h2>
-      <div>{children}</div>
+      {children}
     </section>
   );
 }

@@ -33,6 +33,11 @@ export default function ResumeEditor({ resumeData, onChange }) {
         onChange={(v) => updateSection("summary", v)}
       />
 
+      <Education
+        value={resumeData.education}
+        onChange={(v) => updateSection("education", v)}
+      />
+
       <WorkExperience
         value={resumeData.workExperience}
         onChange={(v) => updateSection("workExperience", v)}
@@ -51,11 +56,6 @@ export default function ResumeEditor({ resumeData, onChange }) {
       <SoftSkills
         value={resumeData.softSkills}
         onChange={(v) => updateSection("softSkills", v)}
-      />
-
-      <Education
-        value={resumeData.education}
-        onChange={(v) => updateSection("education", v)}
       />
 
       <Achievements
