@@ -70,7 +70,7 @@ export default function ResumePreview({ resume }) {
       }
 
       const res = await fetch(
-        `http://localhost:5000/api/v1/resumes/${resume._id}/export?format=${format}`,
+        `http://localhost:5000/api/v1/resumes/${resume._id}/export?format=${format}&filename=${encodeURIComponent(safeName)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

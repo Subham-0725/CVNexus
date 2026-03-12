@@ -273,6 +273,7 @@ export default function Dashboard() {
               badge="Workspace"
               accentColor="#10b981"
               delay={2}
+              onClick={() => navigate("/documents")}
             />
 
             <BentoCard

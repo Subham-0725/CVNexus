@@ -8,6 +8,7 @@ import SignUpPage from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import Builder from "./pages/Builder";
+import DocumentLibrary from "./pages/DocumentLibrary";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
@@ -90,6 +91,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Builder />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/documents"
+            element={
+              <ProtectedRoute>
+                <DocumentLibrary />
               </ProtectedRoute>
             }
           />

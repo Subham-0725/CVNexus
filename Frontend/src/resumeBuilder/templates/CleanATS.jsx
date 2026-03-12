@@ -143,7 +143,7 @@ export default function CleanATS({ data }) {
   if (technicalSkills.length > 0) {
     sections.push(
       <Section key="technicalSkills" title="Technical Skills">
-        <p className="break-words">{technicalSkills.join(", ")}</p>
+        <p className="wrap-break-word">{technicalSkills.join(", ")}</p>
       </Section>,
     );
   }

@@ -1,4 +1,5 @@
 import Resume from "../models/Resume.js";
+import ResumeContent from "../models/ResumeContent.js";
 
 /**
  * PATCH /resumes/:id
@@ -26,13 +27,27 @@ export async function updateResume(req, res) {
       });
     }
 
-    // Store FULL editor state
+    // Store FULL editor state on main document (backwards compatible)
     resume.data = data;
     resume.isDraft = isDraft;
     resume.lastEditedAt = new Date();
     resume.version += 1;
-
     await resume.save();
+
+    // Also upsert into structured ResumeContent collection
+    await ResumeContent.findOneAndUpdate(
+      { resumeId: resume._id, userId: req.user.id },
+      {
+        resumeId: resume._id,
+        userId: req.user.id,
+        ...data,
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      },
+    );
 
     return res.json({
       success: true,

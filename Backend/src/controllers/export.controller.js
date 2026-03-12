@@ -1,4 +1,6 @@
 import Resume from "../models/Resume.js";
+import ResumeContent from "../models/ResumeContent.js";
+import Document from "../models/Document.js";
 import { generatePDF, generateDOCX } from "../services/export.service.js";
 
 /* ================= EXPORT HANDLER ================= */
@@ -6,9 +8,9 @@ import { generatePDF, generateDOCX } from "../services/export.service.js";
 export const exportResume = async (req, res) => {
   try {
     const { id } = req.params;
-    const { format } = req.query;
+    const { format, filename } = req.query;
 
-    console.log('Export request:', { id, format });
+    console.log('Export request:', { id, format, filename });
 
     if (!["pdf", "docx"].includes(format)) {
       return res.status(400).json({
@@ -27,21 +29,60 @@ export const exportResume = async (req, res) => {
       });
     }
 
-    console.log('Resume found:', resume.title);
-    console.log('Resume data:', JSON.stringify(resume.data, null, 2));
+    console.log("Resume found:", resume.title);
+    console.log("Resume data:", JSON.stringify(resume.data, null, 2));
+
+    // Prefer structured content document if present
+    const content = await ResumeContent.findOne({
+      resumeId: resume._id,
+      userId: req.user.id,
+    });
+
+    const exportData = content
+      ? {
+        personalInfo: content.personalInfo,
+        summary: content.summary,
+        education: content.education,
+        workExperience: content.workExperience,
+        projects: content.projects,
+        technicalSkills: content.technicalSkills,
+        softSkills: content.softSkills,
+        certifications: content.certifications,
+        achievements: content.achievements,
+        languages: content.languages,
+        hobbies: content.hobbies,
+      }
+      : resume.data || {};
 
     /* ================= PDF ================= */
     if (format === "pdf") {
-      const html = buildHTML(resume.data);
+      const html = buildHTML(exportData);
       console.log('Generated HTML length:', html.length);
 
       const buffer = await generatePDF(html);
       console.log('PDF buffer size:', buffer.length);
 
+      // Save to Document Library BEFORE sending response
+      try {
+        const doc = await Document.create({
+          userId: req.user.id,
+          resumeId: resume._id,
+          title: filename || resume.title || "Untitled Resume",
+          format: "pdf",
+          fileData: Buffer.from(buffer),
+          fileSize: buffer.length,
+          templateSlug: resume.templateSlug,
+        });
+        console.log("✅ Document saved to library:", doc._id);
+      } catch (err) {
+        console.error("❌ Failed to save document:", err.message);
+        console.error("Full error:", err);
+      }
+
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="${resume.title || "resume"}.pdf"`,
+        `attachment; filename="${filename || resume.title || "resume"}.pdf"`,
       );
       res.setHeader("Content-Length", buffer.length);
 
@@ -50,13 +91,31 @@ export const exportResume = async (req, res) => {
 
     /* ================= DOCX ================= */
     if (format === "docx") {
-      const buffer = await generateDOCX(resume.data);
+      const buffer = await generateDOCX(exportData);
       console.log('DOCX buffer size:', buffer.length);
+
+      // Save PDF copy to Document Library
+      try {
+        const html = buildHTML(exportData);
+        const pdfBuffer = await generatePDF(html);
+        await Document.create({
+          userId: req.user.id,
+          resumeId: resume._id,
+          title: filename || resume.title || "Untitled Resume",
+          format: "pdf",
+          fileData: Buffer.from(pdfBuffer),
+          fileSize: pdfBuffer.length,
+          templateSlug: resume.templateSlug,
+        });
+        console.log("✅ PDF copy saved to library");
+      } catch (err) {
+        console.error("❌ Failed to save PDF copy:", err);
+      }
 
       res.set({
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `attachment; filename=${resume.title}.docx`,
+        "Content-Disposition": `attachment; filename=${filename || resume.title}.docx`,
       });
 
       return res.send(buffer);
@@ -203,163 +262,147 @@ function buildHTML(data) {
           <!-- Personal Info -->
           <div class="header">
             <h1>${personalInfo.fullName || "Your Name"}</h1>
-            ${
-              personalInfo.headline
-                ? `<div class="headline">${personalInfo.headline}</div>`
-                : ""
-            }
+            ${personalInfo.headline
+      ? `<div class="headline">${personalInfo.headline}</div>`
+      : ""
+    }
             <div class="contact">
-              ${
-                [
-                  personalInfo.email,
-                  personalInfo.phone,
-                  personalInfo.location,
-                  personalInfo.linkedin,
-                ]
-                  .filter(Boolean)
-                  .join(" | ")
-              }
+              ${[
+      personalInfo.email,
+      personalInfo.phone,
+      personalInfo.location,
+      personalInfo.linkedin,
+    ]
+      .filter(Boolean)
+      .join(" | ")
+    }
             </div>
           </div>
 
           <!-- Professional Summary -->
-          ${
-            summary
-              ? `
+          ${summary
+      ? `
           <div class="section">
             <h2>Professional Summary</h2>
             <div class="section-divider"></div>
             <p>${summary}</p>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Education -->
-          ${
-            education.length > 0
-              ? `
+          ${education.length > 0
+      ? `
           <div class="section">
             <h2>Education</h2>
             <div class="section-divider"></div>
             ${education
-              .map(
-                (edu) => `
+        .map(
+          (edu) => `
               <div class="item">
                 <div class="item-header">
-                  <h3>${edu.institution || ""}${
-                  edu.degree ? ` - ${edu.degree}` : ""
-                }</h3>
+                  <h3>${edu.institution || ""}${edu.degree ? ` - ${edu.degree}` : ""
+            }</h3>
                   <span class="subtext">${edu.year || ""}</span>
                 </div>
-                ${
-                  edu.description
-                    ? `<p>${edu.description.replace(/\n/g, "<br/>")}</p>`
-                    : ""
-                }
+                ${edu.description
+              ? `<p>${edu.description.replace(/\n/g, "<br/>")}</p>`
+              : ""
+            }
               </div>
             `,
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Work Experience -->
-          ${
-            workExperience.length > 0
-              ? `
+          ${workExperience.length > 0
+      ? `
           <div class="section">
             <h2>Work Experience</h2>
             <div class="section-divider"></div>
             ${workExperience
-              .map(
-                (exp) => `
+        .map(
+          (exp) => `
               <div class="item">
                 <div class="item-header">
-                  <h3>${exp.role || ""}${
-                  exp.company ? ` at ${exp.company}` : ""
-                }</h3>
-                  <span class="subtext">${exp.startDate || ""}${
-                  exp.endDate ? ` - ${exp.endDate}` : ""
-                }</span>
+                  <h3>${exp.role || ""}${exp.company ? ` at ${exp.company}` : ""
+            }</h3>
+                  <span class="subtext">${exp.startDate || ""}${exp.endDate ? ` - ${exp.endDate}` : ""
+            }</span>
                 </div>
-                ${
-                  exp.description
-                    ? `<p>${exp.description.replace(/\n/g, "<br/>")}</p>`
-                    : ""
-                }
+                ${exp.description
+              ? `<p>${exp.description.replace(/\n/g, "<br/>")}</p>`
+              : ""
+            }
               </div>
             `,
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Projects -->
-          ${
-            projects.length > 0
-              ? `
+          ${projects.length > 0
+      ? `
           <div class="section">
             <h2>Projects</h2>
             <div class="section-divider"></div>
             ${projects
-              .map(
-                (proj) => `
+        .map(
+          (proj) => `
               <div class="item">
                 <h3>${proj.title || ""}</h3>
-                ${
-                  proj.link
-                    ? `<p class="subtext">${proj.link}</p>`
-                    : ""
-                }
-                ${
-                  proj.description
-                    ? `<p>${proj.description.replace(/\n/g, "<br/>")}</p>`
-                    : ""
-                }
+                ${proj.link
+              ? `<p class="subtext">${proj.link}</p>`
+              : ""
+            }
+                ${proj.description
+              ? `<p>${proj.description.replace(/\n/g, "<br/>")}</p>`
+              : ""
+            }
               </div>
             `,
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Technical Skills -->
-          ${
-            technicalSkills.length > 0
-              ? `
+          ${technicalSkills.length > 0
+      ? `
           <div class="section">
             <h2>Technical Skills</h2>
             <div class="section-divider"></div>
             <p class="skills-line">${technicalSkills.join(", ")}</p>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Soft Skills -->
-          ${
-            softSkills.length > 0
-              ? `
+          ${softSkills.length > 0
+      ? `
           <div class="section">
             <h2>Soft Skills</h2>
             <div class="section-divider"></div>
             <p class="skills-line">${softSkills.join(", ")}</p>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Certifications -->
-          ${
-            certifications.length > 0
-              ? `
+          ${certifications.length > 0
+      ? `
           <div class="section">
             <h2>Certifications</h2>
             <div class="section-divider"></div>
@@ -368,13 +411,12 @@ function buildHTML(data) {
             </ul>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Achievements -->
-          ${
-            achievements.length > 0
-              ? `
+          ${achievements.length > 0
+      ? `
           <div class="section">
             <h2>Achievements</h2>
             <div class="section-divider"></div>
@@ -383,13 +425,12 @@ function buildHTML(data) {
             </ul>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Languages -->
-          ${
-            languages.length > 0
-              ? `
+          ${languages.length > 0
+      ? `
           <div class="section">
             <h2>Languages</h2>
             <div class="section-divider"></div>
@@ -398,13 +439,12 @@ function buildHTML(data) {
             </ul>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
 
           <!-- Interests -->
-          ${
-            hobbies.length > 0
-              ? `
+          ${hobbies.length > 0
+      ? `
           <div class="section">
             <h2>Interests</h2>
             <div class="section-divider"></div>
@@ -413,8 +453,8 @@ function buildHTML(data) {
             </ul>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
         </div>
       </body>
     </html>

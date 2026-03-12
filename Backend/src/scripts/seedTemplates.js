@@ -4,115 +4,103 @@ import Template from "../models/Template.js";
 
 dotenv.config();
 
+const templates = [
+  {
+    slug: "clean-ats-v1",
+    name: "Clean ATS",
+    description: "Minimal, one-column ATS-safe resume with a straightforward structure",
+    previewImageUrl: "/templates/resume_1.jpg",
+    category: "ats-optimized",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "modern-ats-v1",
+    name: "Modern ATS",
+    description: "ATS-optimized layout with enhanced spacing and clearer section hierarchy",
+    previewImageUrl: "/templates/resume_2.jpg",
+    category: "ats-optimized",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "professional-sidebar-v1",
+    name: "Professional Sidebar",
+    description: "Two-column resume with a structured sidebar for skills, education, and contact details",
+    previewImageUrl: "/templates/resume_3.png",
+    category: "professional",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "classic-elegant-v1",
+    name: "Classic Elegant",
+    description: "Timeless two-column resume design with balanced typography and clean dividers",
+    previewImageUrl: "/templates/resume_4.jpg",
+    category: "professional",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "modern-creative-v1",
+    name: "Modern Creative",
+    description: "Contemporary resume with bold section contrast and visual emphasis for modern roles",
+    previewImageUrl: "/templates/resume_5.jpg",
+    category: "creative",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "bold-sidebar-v1",
+    name: "Bold Sidebar",
+    description: "High-contrast sidebar layout ideal for marketing, design, and client-facing roles",
+    previewImageUrl: "/templates/resume_6.jpg",
+    category: "creative",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "executive-clean-v1",
+    name: "Executive Clean",
+    description: "Refined resume format focused on leadership experience and executive-level clarity",
+    previewImageUrl: "/templates/resume_7.jpg",
+    category: "executive",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+  {
+    slug: "soft-professional-v1",
+    name: "Soft Professional",
+    description: "Clean and approachable resume design with subtle color accents and clear structure",
+    previewImageUrl: "/templates/resume_8.jpg",
+    category: "professional",
+    isPremium: false,
+    version: 1,
+    schemaDefinition: {},
+  },
+];
+
 async function seedTemplates() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
+    console.log("Connected to MongoDB");
 
-    const templates = [
-      {
-        slug: "clean-ats-v1",
-        name: "Clean ATS",
-        description:
-          "Minimal, one-column ATS-safe resume with a straightforward structure",
-        previewImageUrl: "/templateLibrary/Resume_1.png",
-        isPremium: false,
-        schemaDefinition: {
-          sections: ["header", "experience", "education", "skills"],
-        },
-      },
+    await Template.deleteMany({});
+    console.log("Cleared existing templates");
 
-      {
-        slug: "modern-ats-v1",
-        name: "Modern ATS",
-        description:
-          "ATS-optimized layout with enhanced spacing and clearer section hierarchy",
-        previewImageUrl: "/templateLibrary/Resume_2.jpg",
-        isPremium: false,
-        schemaDefinition: {
-          sections: ["header", "summary", "experience", "skills"],
-        },
-      },
-
-      {
-        slug: "professional-sidebar-v1",
-        name: "Professional Sidebar",
-        description:
-          "Two-column resume with a structured sidebar for skills, education, and contact details",
-        previewImageUrl: "/templateLibrary/Resume_3.png",
-        isPremium: false,
-        schemaDefinition: {
-          sections: ["header", "skills", "experience", "education"],
-        },
-      },
-
-      {
-        slug: "classic-elegant-v1",
-        name: "Classic Elegant",
-        description:
-          "Timeless two-column resume design with balanced typography and clean dividers",
-        previewImageUrl: "/templateLibrary/Resume_4.jpg",
-        isPremium: false,
-        schemaDefinition: {
-          sections: ["header", "experience", "education", "skills"],
-        },
-      },
-
-      {
-        slug: "modern-creative-v1",
-        name: "Modern Creative",
-        description:
-          "Contemporary resume with bold section contrast and visual emphasis for modern roles",
-        previewImageUrl: "/templateLibrary/Resume_5.jpg",
-        isPremium: true,
-        schemaDefinition: {
-          sections: ["header", "summary", "experience", "projects", "skills"],
-        },
-      },
-
-      {
-        slug: "bold-sidebar-v1",
-        name: "Bold Sidebar",
-        description:
-          "High-contrast sidebar layout ideal for marketing, design, and client-facing roles",
-        previewImageUrl: "/templateLibrary/Resume_6.jpg",
-        isPremium: true,
-        schemaDefinition: {
-          sections: ["header", "skills", "experience", "education"],
-        },
-      },
-
-      {
-        slug: "executive-clean-v1",
-        name: "Executive Clean",
-        description:
-          "Refined resume format focused on leadership experience and executive-level clarity",
-        previewImageUrl: "/templateLibrary/Resume_7.jpg",
-        isPremium: true,
-        schemaDefinition: {
-          sections: ["header", "summary", "experience", "education"],
-        },
-      },
-
-      {
-        slug: "soft-professional-v1",
-        name: "Soft Professional",
-        description:
-          "Clean and approachable resume design with subtle color accents and clear structure",
-        previewImageUrl: "/templateLibrary/Resume_8.jpg",
-        isPremium: false,
-        schemaDefinition: {
-          sections: ["header", "experience", "education", "skills"],
-        },
-      },
-    ];
-
-    await Template.deleteMany();
     await Template.insertMany(templates);
+    console.log(`✅ Seeded ${templates.length} templates`);
 
-    console.log("✅ All 8 templates seeded successfully");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Failed to seed templates:", error);
+    console.error("Seed error:", error);
     process.exit(1);
   }
 }

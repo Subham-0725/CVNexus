@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed:templates": "node src/scripts/seedTemplates.js"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",

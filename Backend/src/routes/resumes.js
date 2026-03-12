@@ -4,7 +4,7 @@ import Template from "../models/Template.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { attachUser } from "../middleware/attachUser.js";
 import { updateResume } from "../controllers/resume.controller.js";
-import { exportResume } from "../controllers/export.controller.js"; // ✅ NEW
+import { exportResume } from "../controllers/export.controller.js";
 
 const router = express.Router();
 
@@ -68,3 +68,4 @@ router.patch("/:id", requireAuth, attachUser, updateResume);
 router.get("/:id/export", requireAuth, attachUser, exportResume);
 
 export default router;
+

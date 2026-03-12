@@ -4,6 +4,7 @@ import cors from "cors";
 import meRoute from "./routes/me.js";
 import templatesRoute from "./routes/templates.js";
 import resumesRoute from "./routes/resumes.js";
+import documentsRoute from "./routes/documents.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(
 app.use("/api/v1/me", meRoute);
 app.use("/api/v1/templates", templatesRoute);
 app.use("/api/v1/resumes", resumesRoute);
+app.use("/api/v1/documents", documentsRoute);
 
 /**
  * Health check
