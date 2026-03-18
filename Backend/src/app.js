@@ -5,6 +5,8 @@ import meRoute from "./routes/me.js";
 import templatesRoute from "./routes/templates.js";
 import resumesRoute from "./routes/resumes.js";
 import documentsRoute from "./routes/documents.js";
+import aiRoutes from "./routes/ai.routes.js";
+
 
 const app = express();
 
@@ -24,7 +26,7 @@ app.use(express.json({ limit: "2mb" }));
  */
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
@@ -37,6 +39,7 @@ app.use("/api/v1/me", meRoute);
 app.use("/api/v1/templates", templatesRoute);
 app.use("/api/v1/resumes", resumesRoute);
 app.use("/api/v1/documents", documentsRoute);
+app.use("/api/ai", aiRoutes);
 
 /**
  * Health check

@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/express": "^1.7.65",
+    "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.2",
     "bullmq": "^5.66.5",
     "cors": "^2.8.5",
@@ -19,6 +20,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.2.1",
+    "groq-sdk": "^1.1.1",
     "ioredis": "^5.9.1",
     "mongoose": "^8.10.0",
     "pizzip": "^3.2.0",

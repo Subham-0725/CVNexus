@@ -1,12 +1,7 @@
-// src/resumeBuilder/editor/sections/PersonalInfo.jsx
 import { useState, useEffect } from "react";
 import SectionHeader from "../shared/SectionHeader";
 import TextInput from "../shared/TextInput";
-import {
-  validateEmail,
-  validatePhone,
-  validateURL,
-} from "../../utils/validation";
+import { validateEmail, validatePhone, validateURL } from "../../utils/validation";
 
 export default function PersonalInfo({ value = {}, onChange }) {
   const [errors, setErrors] = useState({});
@@ -27,26 +22,27 @@ export default function PersonalInfo({ value = {}, onChange }) {
   }, [value.email, value.phone, value.linkedin]);
 
   return (
-    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <SectionHeader
         title="Identity & Contact"
         subtitle="This is how recruiters will find you. Keep it professional."
       />
 
-      <div className="bg-white border border-stone-200 rounded-xl p-8 shadow-[4px_4px_0px_rgba(0,0,0,0.05)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          {/* Primary Identity Group */}
-          <div className="md:col-span-2 pb-4 border-b border-stone-100 mb-2">
-            <h3 className="text-xs font-bold tracking-widest text-stone-400 uppercase mb-4">
-              Core Identity
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6">
+      <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-6">
+        <div className="space-y-10">
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1 bg-slate-100"></div>
+              <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">Core Identity</h3>
+              <div className="h-px flex-1 bg-slate-100"></div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
               <TextInput
                 label="Full Name"
                 value={value.fullName}
                 onChange={(v) => update("fullName", v)}
                 placeholder="Jane Doe"
-                className="text-lg font-serif"
+                className="text-lg font-medium"
               />
               <TextInput
                 label="Headline"
@@ -57,19 +53,20 @@ export default function PersonalInfo({ value = {}, onChange }) {
             </div>
           </div>
 
-          {/* Contact Details Group */}
-          <div className="md:col-span-2">
-            <h3 className="text-xs font-bold tracking-widest text-stone-400 uppercase mb-4">
-              Contact Channels
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1 bg-slate-100"></div>
+              <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">Contact Channels</h3>
+              <div className="h-px flex-1 bg-slate-100"></div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
               <TextInput
                 label="Email Address"
                 type="email"
                 value={value.email}
                 onChange={(v) => update("email", v)}
                 error={errors.email}
-                icon={<span className="text-stone-400">@</span>}
+                icon={<span className="text-slate-400">@</span>}
               />
               <TextInput
                 label="Phone Number"

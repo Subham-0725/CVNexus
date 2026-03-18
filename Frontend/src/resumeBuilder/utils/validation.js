@@ -32,8 +32,9 @@ export const validateURL = (url) => {
 };
 
 export const validateWordCount = (text, maxWords) => {
-  if (!text || text.trim() === "") return { valid: true, error: "", count: 0 };
-  const count = text.trim().length;
+  const str = text == null ? "" : String(text);
+  if (!str.trim()) return { valid: true, error: "", count: 0 };
+  const count = str.trim().length;
   return {
     valid: count <= maxWords,
     error: count > maxWords ? `Exceeds ${maxWords} characters (${count} characters)` : "",
