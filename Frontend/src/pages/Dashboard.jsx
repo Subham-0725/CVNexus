@@ -250,20 +250,7 @@ export default function Dashboard() {
               badge="Primary Tool"
               accentColor="#6366f1"
               delay={1}
-              onClick={async () => {
-                try {
-                  const token = await getToken();
-                  const response = await axios.post(
-                    "http://localhost:5000/api/v1/resumes",
-                    { templateSlug: "modern-ats" },
-                    { headers: { Authorization: `Bearer ${token}` } },
-                  );
-                  navigate(`/builder/${response.data._id}`);
-                } catch (error) {
-                  console.error("Failed to create resume:", error);
-                  navigate("/templates");
-                }
-              }}
+              onClick={() => navigate("/templates")}
             />
 
             <BentoCard
@@ -278,12 +265,13 @@ export default function Dashboard() {
 
             <BentoCard
               title="ATS Diagnostic Core"
-              description="Deep-scan resume analysis for parsing risks. Our proprietary engine simulates how major enterprise ATS systems read your document."
+              description="Deep-scan resume analysis..."
               icon={ScanSearch}
               badge="Optimization"
               accentColor="#8b5cf6"
               delay={3}
               large
+              onClick={() => navigate("/ats-checker")}
             />
           </section>
         </div>

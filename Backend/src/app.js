@@ -6,7 +6,7 @@ import templatesRoute from "./routes/templates.js";
 import resumesRoute from "./routes/resumes.js";
 import documentsRoute from "./routes/documents.js";
 import aiRoutes from "./routes/ai.routes.js";
-
+import atsRoutes from "./routes/ats.routes.js";
 
 const app = express();
 
@@ -40,6 +40,7 @@ app.use("/api/v1/templates", templatesRoute);
 app.use("/api/v1/resumes", resumesRoute);
 app.use("/api/v1/documents", documentsRoute);
 app.use("/api/ai", aiRoutes);
+app.use("/api/v1/ats", atsRoutes);
 
 /**
  * Health check

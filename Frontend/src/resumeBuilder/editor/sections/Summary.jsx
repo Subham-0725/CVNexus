@@ -4,7 +4,7 @@ import { validateWordCount } from "../../utils/validation";
 import { improveText } from "../../../lib/api/ai";
 import { cleanText } from "../../../lib/utils/cleanText";
 
-export default function Summary({ value, onChange }) {
+export default function Summary({ value, onChange, errors = [] }) {
   const [validation, setValidation] = useState({ valid: true, error: "", count: 0 });
   const [loading, setLoading] = useState(false);
   const [aiError, setAiError] = useState("");
@@ -37,9 +37,15 @@ export default function Summary({ value, onChange }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={6}
+          spellCheck={true}
+          autoCorrect="on"
+          autoCapitalize="sentences"
           className="w-full bg-white border border-slate-200 rounded-2xl p-6 text-slate-800 leading-relaxed focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all shadow-sm"
           placeholder="I am a dedicated professional with..."
         />
+        <p className="text-xs text-slate-400 mt-2">
+          Tip: Right-click underlined words to fix spelling
+        </p>
         <div className="flex items-center justify-between mt-3 px-1">
           <div className="flex items-center gap-2">
             <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -67,6 +73,11 @@ export default function Summary({ value, onChange }) {
         </div>
       </div>
       {aiError && <p className="text-xs text-red-500 mt-2 ml-1">{aiError}</p>}
+      {errors.slice(0, 3).map((error, index) => (
+        <p key={`${error}-${index}`} className="text-xs text-red-500 mt-1 ml-1">
+          {error}
+        </p>
+      ))}
     </section>
   );
 }

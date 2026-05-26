@@ -49,9 +49,15 @@ export default function Education({ value = [], onChange }) {
                 rows={3}
                 value={item.description || ""}
                 onChange={(e) => updateItem(item.id, "description", e.target.value)}
+                spellCheck={true}
+                autoCorrect="on"
+                autoCapitalize="sentences"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all resize-none"
                 placeholder="GPA, awards, or relevant coursework..."
               />
+              <p className="text-xs text-slate-400 mt-1">
+                Tip: Right-click underlined words to fix spelling
+              </p>
             </div>
             <div className="flex gap-3 items-center mt-4">
               <button

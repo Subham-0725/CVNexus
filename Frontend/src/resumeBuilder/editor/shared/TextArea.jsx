@@ -19,10 +19,16 @@ export default function TextArea({
         value={value || ""}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
+        spellCheck={true}
+        autoCorrect="on"
+        autoCapitalize="sentences"
         className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring ${
           error ? "border-red-500 focus:ring-red-200" : ""
         }`}
       />
+      <p className="text-xs text-slate-400">
+        Tip: Right-click underlined words to fix spelling
+      </p>
       {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
     </label>
   );

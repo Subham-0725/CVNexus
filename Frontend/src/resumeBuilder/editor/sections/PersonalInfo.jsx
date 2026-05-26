@@ -3,8 +3,8 @@ import SectionHeader from "../shared/SectionHeader";
 import TextInput from "../shared/TextInput";
 import { validateEmail, validatePhone, validateURL } from "../../utils/validation";
 
-export default function PersonalInfo({ value = {}, onChange }) {
-  const [errors, setErrors] = useState({});
+export default function PersonalInfo({ value = {}, onChange, errors = [] }) {
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const update = (key, val) => {
     onChange({ ...value, [key]: val });
@@ -18,7 +18,7 @@ export default function PersonalInfo({ value = {}, onChange }) {
       newErrors.phone = validatePhone(value.phone).error;
     if (value.linkedin && !validateURL(value.linkedin).valid)
       newErrors.linkedin = validateURL(value.linkedin).error;
-    setErrors(newErrors);
+    setFieldErrors(newErrors);
   }, [value.email, value.phone, value.linkedin]);
 
   return (
@@ -65,7 +65,7 @@ export default function PersonalInfo({ value = {}, onChange }) {
                 type="email"
                 value={value.email}
                 onChange={(v) => update("email", v)}
-                error={errors.email}
+                error={fieldErrors.email}
                 icon={<span className="text-slate-400">@</span>}
               />
               <TextInput
@@ -73,7 +73,7 @@ export default function PersonalInfo({ value = {}, onChange }) {
                 value={value.phone}
                 onChange={(v) => update("phone", v)}
                 placeholder="+1 (555) 000-0000"
-                error={errors.phone}
+                error={fieldErrors.phone}
               />
               <TextInput
                 label="Location"
@@ -86,9 +86,14 @@ export default function PersonalInfo({ value = {}, onChange }) {
                 value={value.linkedin}
                 onChange={(v) => update("linkedin", v)}
                 placeholder="linkedin.com/in/jane"
-                error={errors.linkedin}
+                error={fieldErrors.linkedin}
               />
             </div>
+            {errors.slice(0, 3).map((error, index) => (
+              <p key={`${error}-${index}`} className="text-xs text-red-500 mt-2">
+                {error}
+              </p>
+            ))}
           </div>
         </div>
       </div>

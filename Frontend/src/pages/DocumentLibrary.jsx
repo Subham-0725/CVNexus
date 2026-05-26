@@ -3,18 +3,15 @@ import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import {
-  FileText,
   Trash2,
-  Calendar,
   X,
-  FileKey,
   FolderOpen,
-  ArrowRight,
   Fingerprint,
-  Eye,
   Clock,
   HardDrive,
   Maximize2,
+  Download,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function DocumentLibrary() {
@@ -23,6 +20,8 @@ export default function DocumentLibrary() {
   const [loading, setLoading] = useState(true);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [thumbnails, setThumbnails] = useState({});
 
   useEffect(() => {
@@ -93,9 +92,8 @@ export default function DocumentLibrary() {
   };
 
   const handleDelete = async (docId) => {
-    if (!window.confirm("Permanent Action: Remove this document index?"))
-      return;
     setDeletingId(docId);
+    setConfirmDeleteId(null);
     try {
       const token = await getToken();
       await axios.delete(`http://localhost:5000/api/v1/documents/${docId}`, {
@@ -106,6 +104,29 @@ export default function DocumentLibrary() {
       console.error("UX Trace: Purge failed", error);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleDownload = async (doc) => {
+    setDownloadingId(doc._id);
+    try {
+      const token = await getToken();
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/documents/${doc._id}/download`,
+        { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" },
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${doc.title}.${doc.format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("UX Trace: Download failed", error);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -256,44 +277,85 @@ export default function DocumentLibrary() {
                     </div>
 
                     {/* METADATA BLOCK */}
-                    <div className="mt-8 flex justify-between items-start">
-                      <div className="space-y-4 flex-1">
-                        <h3 className="text-xl font-medium tracking-tight truncate leading-none transition-colors duration-500 group-hover:text-[#C5A880]">
-                          {doc.title}
-                        </h3>
-                        <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-2 text-[10px] font-medium text-[#A1A1A1] uppercase tracking-[0.1em]">
-                            <Clock size={11} className="text-[#C5A880]" />
-                            {new Date(doc.createdAt).toLocaleDateString(
-                              undefined,
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              },
+                    <div className="mt-8 space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-3 flex-1 min-w-0">
+                          <h3 className="text-xl font-medium tracking-tight truncate leading-none transition-colors duration-500 group-hover:text-[#C5A880]">
+                            {doc.title}
+                          </h3>
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2 text-[10px] font-medium text-[#A1A1A1] uppercase tracking-[0.1em]">
+                              <Clock size={11} className="text-[#C5A880]" />
+                              {new Date(doc.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-medium text-[#A1A1A1] uppercase tracking-[0.1em]">
+                              <HardDrive size={11} className="text-[#C5A880]" />
+                              {formatFileSize(doc.fileSize)}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 ml-4 flex-shrink-0">
+                          {/* Download */}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDownload(doc); }}
+                            disabled={downloadingId === doc._id}
+                            title="Download"
+                            className="p-3 text-[#6B6B6B] hover:text-[#C5A880] hover:bg-[#F5EFE6] transition-all duration-300 rounded-sm"
+                          >
+                            {downloadingId === doc._id ? (
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent animate-spin rounded-full" />
+                            ) : (
+                              <Download size={16} strokeWidth={1.5} />
                             )}
-                          </div>
-                          <div className="flex items-center gap-2 text-[10px] font-medium text-[#A1A1A1] uppercase tracking-[0.1em]">
-                            <HardDrive size={11} className="text-[#C5A880]" />
-                            {formatFileSize(doc.fileSize)}
-                          </div>
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(doc._id); }}
+                            disabled={deletingId === doc._id}
+                            title="Delete"
+                            className="p-3 text-[#6B6B6B] hover:text-[#E5484D] hover:bg-[#FCECEC] transition-all duration-300 rounded-sm"
+                          >
+                            {deletingId === doc._id ? (
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent animate-spin rounded-full" />
+                            ) : (
+                              <Trash2 size={16} strokeWidth={1.5} />
+                            )}
+                          </button>
                         </div>
                       </div>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(doc._id);
-                        }}
-                        disabled={deletingId === doc._id}
-                        className="p-3 text-[#D1D1D1] hover:text-[#E5484D] hover:bg-[#FCECEC] transition-all duration-300 rounded-sm"
-                      >
-                        {deletingId === doc._id ? (
-                          <div className="w-4 h-4 border-2 border-current border-t-transparent animate-spin rounded-full" />
-                        ) : (
-                          <Trash2 size={16} strokeWidth={1.5} />
+                      {/* Inline delete confirmation */}
+                      <AnimatePresence>
+                        {confirmDeleteId === doc._id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            className="flex items-center justify-between bg-[#FFF5F5] border border-[#FECACA] px-4 py-3 rounded-sm"
+                          >
+                            <div className="flex items-center gap-2 text-[11px] font-bold text-[#E5484D] uppercase tracking-wider">
+                              <AlertTriangle size={13} />
+                              Permanently delete?
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDelete(doc._id); }}
+                                className="text-[10px] font-black uppercase tracking-widest bg-[#E5484D] text-white px-3 py-1.5 rounded-sm hover:bg-red-600 transition-colors"
+                              >
+                                Delete
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
+                                className="text-[10px] font-black uppercase tracking-widest text-[#A1A1A1] px-3 py-1.5 rounded-sm hover:bg-[#F0F0F0] transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </motion.div>
                         )}
-                      </button>
+                      </AnimatePresence>
                     </div>
                   </motion.div>
                 ))}
@@ -318,16 +380,24 @@ export default function DocumentLibrary() {
                   Asset Preview System
                 </span>
               </div>
-              <button
-                onClick={() => setPreviewDoc(null)}
-                className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-white hover:text-[#C5A880] transition-colors"
-              >
-                Close{" "}
-                <X
-                  size={20}
-                  className="group-hover:rotate-90 transition-transform duration-500"
-                />
-              </button>
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={() => {
+                    const doc = documents.find(d => d._id === previewDoc.id);
+                    if (doc) handleDownload(doc);
+                  }}
+                  className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-[#C5A880] transition-colors"
+                >
+                  Download <Download size={16} />
+                </button>
+                <button
+                  onClick={() => setPreviewDoc(null)}
+                  className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-white hover:text-[#C5A880] transition-colors"
+                >
+                  Close{" "}
+                  <X size={20} className="group-hover:rotate-90 transition-transform duration-500" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 flex items-center justify-center p-4 md:p-12 overflow-hidden">

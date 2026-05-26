@@ -1,4 +1,5 @@
 // src/resumeBuilder/editor/ResumeEditor.jsx
+import { useEffect, useState } from "react";
 import PersonalInfo from "./sections/PersonalInfo";
 import Summary from "./sections/Summary";
 import TechnicalSkills from "./sections/TechnicalSkills";
@@ -10,8 +11,19 @@ import Achievements from "./sections/Achievements";
 import Certifications from "./sections/Certifications";
 import Languages from "./sections/Languages";
 import Hobbies from "./sections/Hobbies";
+import { validateResume } from "@/utils/validateResume";
 
 export default function ResumeEditor({ resumeData, onChange }) {
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrors(validateResume(resumeData));
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [resumeData]);
+
   if (!resumeData) return null;
 
   const updateSection = (key, value) => {
@@ -26,11 +38,13 @@ export default function ResumeEditor({ resumeData, onChange }) {
       <PersonalInfo
         value={resumeData.personalInfo}
         onChange={(v) => updateSection("personalInfo", v)}
+        errors={errors.personalInfo}
       />
 
       <Summary
         value={resumeData.summary}
         onChange={(v) => updateSection("summary", v)}
+        errors={errors.summary}
       />
 
       <Education
@@ -41,6 +55,7 @@ export default function ResumeEditor({ resumeData, onChange }) {
       <WorkExperience
         value={resumeData.workExperience}
         onChange={(v) => updateSection("workExperience", v)}
+        errors={errors}
       />
 
       <Projects
@@ -51,6 +66,7 @@ export default function ResumeEditor({ resumeData, onChange }) {
       <TechnicalSkills
         value={resumeData.technicalSkills}
         onChange={(v) => updateSection("technicalSkills", v)}
+        errors={errors.skills}
       />
 
       <SoftSkills

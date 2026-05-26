@@ -4,7 +4,7 @@ import TextInput from "../shared/TextInput";
 import { improveText } from "../../../lib/api/ai";
 import { cleanText } from "../../../lib/utils/cleanText";
 
-export default function WorkExperience({ value = [], onChange }) {
+export default function WorkExperience({ value = [], onChange, errors = {} }) {
   const [loadingId, setLoadingId] = useState(null);
   const [aiError, setAiError] = useState({});
   const [previous, setPrevious] = useState({});
@@ -32,7 +32,7 @@ export default function WorkExperience({ value = [], onChange }) {
     <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <SectionHeader title="Work Experience" subtitle="Focus on your impact and results." />
       <div className="space-y-6">
-        {value.map((item) => (
+        {value.map((item, index) => (
           <div key={item.id} className="group relative bg-white border border-slate-200 rounded-2xl p-6 transition-all duration-300 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5">
             <button onClick={() => removeItem(item.id)} className="absolute top-4 right-4 p-2 text-slate-300 hover:text-red-500 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -50,9 +50,15 @@ export default function WorkExperience({ value = [], onChange }) {
                 rows={4}
                 value={item.description || ""}
                 onChange={(e) => updateItem(item.id, "description", e.target.value)}
+                spellCheck={true}
+                autoCorrect="on"
+                autoCapitalize="sentences"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all resize-none"
                 placeholder="Describe your achievements..."
               />
+              <p className="text-xs text-slate-400 mt-1">
+                Tip: Right-click underlined words to fix spelling
+              </p>
             </div>
             <div className="flex gap-3 items-center mt-4">
               <button
@@ -67,6 +73,11 @@ export default function WorkExperience({ value = [], onChange }) {
               )}
             </div>
             {aiError[item.id] && <p className="text-xs text-red-500 mt-2">{aiError[item.id]}</p>}
+            {(errors[`workExperience_${index}`] || []).slice(0, 3).map((error, errorIndex) => (
+              <p key={`${item.id}-${errorIndex}`} className="text-xs text-red-500 mt-1">
+                {error}
+              </p>
+            ))}
           </div>
         ))}
         <button onClick={addItem} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 font-medium hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2">

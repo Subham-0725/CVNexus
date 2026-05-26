@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import Builder from "./pages/Builder";
 import DocumentLibrary from "./pages/DocumentLibrary";
+import AtsChecker from "./pages/AtsChecker";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicOnlyRoute from "./routes/PublicOnlyRoute";
@@ -100,6 +101,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <DocumentLibrary />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ats-checker"
+            element={
+              <ProtectedRoute>
+                <AtsChecker />
               </ProtectedRoute>
             }
           />
